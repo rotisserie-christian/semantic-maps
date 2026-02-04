@@ -1,13 +1,13 @@
 ### Heuristics
-- **`query_length`** - Age = tendency for longer vs shorter queries (younger = longer) <sup>1,6</sup>.
-- **`complexity`** - Age + domain expertise = how elaborate the initial query is <sup>2,3,7</sup>.
-- **`reformulation`** - Domain expertise + age = sticks to initial terms vs strategic reformulation / new keywords <sup>2,4,5</sup>.
-- **`specificity`** - Age + prior task knowledge = vague vs specific phrasing <sup>2,6</sup>.
-- **`patience`** - Age + cognitive flexibility = time per SERP, evaluation vs quick adjustment <sup>3,7</sup>.
-- **`word_choice`** - Age + expertise = vocabulary style (confident/casual vs formal, jargon vs lay terms) <sup>6</sup>.
+- **`query_length.py`** - Age = tendency for longer vs shorter queries (younger = longer) <sup>1,6</sup>.
+- **`complexity.py`** - Age + domain expertise = how elaborate the initial query is <sup>2,3,7</sup>.
+- **`reformulation.py`** - Domain expertise + age = sticks to initial terms vs strategic reformulation / new keywords <sup>2,4,5</sup>.
+- **`specificity.py`** - Age + prior task knowledge = vague vs specific phrasing <sup>2,6</sup>.
+- **`patience.py`** - Age + cognitive flexibility = time per SERP, evaluation vs quick adjustment <sup>3,7</sup>.
+- **`word_choice.py`** - Age + expertise = vocabulary style (confident/casual vs formal, jargon vs lay terms) <sup>6</sup>.
 
 ### Aggregator
-- **`prompts`** - Imports all heuristics and returns prompts for `assemble_prompts`
+- **`prompts.py`** - Imports all heuristics and returns prompts for `assemble_prompts.py`
 
 ### References
 1. <small>Yom-Tov E. Demographic differences in search engine use with implications for cohort selection. *Information Retrieval Journal* 22, 570–580 (2019). https://link.springer.com/article/10.1007/s10791-018-09349-2</small>  
