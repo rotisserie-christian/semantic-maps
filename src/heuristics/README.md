@@ -6,6 +6,9 @@
 - **`patience`** - Age + cognitive flexibility = time per SERP, evaluation vs quick adjustment <sup>3,7</sup>.
 - **`word_choice`** - Age + expertise = vocabulary style (confident/casual vs formal, jargon vs lay terms) <sup>6</sup>.
 
+### Aggregator
+- **`prompts`** - Imports all heuristics and returns prompts for `assemble_prompts`
+
 ### References
 1. <small>Yom-Tov E. Demographic differences in search engine use with implications for cohort selection. *Information Retrieval Journal* 22, 570–580 (2019). https://link.springer.com/article/10.1007/s10791-018-09349-2</small>  
 
