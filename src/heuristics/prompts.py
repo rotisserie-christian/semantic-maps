@@ -1,4 +1,4 @@
-from . import query_length, complexity, reformulation, specificity
+from . import query_length, complexity, reformulation, specificity, patience
 
 
 def get_all_prompts(profile: dict) -> dict[str, str]:
@@ -8,6 +8,7 @@ def get_all_prompts(profile: dict) -> dict[str, str]:
         "complexity": complexity.get_prompt(profile),
         "reformulation": reformulation.get_prompt(profile),
         "specificity": specificity.get_prompt(profile),
-        # patience, word_choice
+        "patience": patience.get_prompt(profile),
+        # word_choice
     }
 
