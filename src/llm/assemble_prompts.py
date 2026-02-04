@@ -57,5 +57,3 @@ def build_prompt(profile_override: Optional[Dict[str, object]] = None) -> str:
     )
 
     return "\n\n".join(sections)
-
-print(build_prompt())
