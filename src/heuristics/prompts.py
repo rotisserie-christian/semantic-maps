@@ -1,12 +1,13 @@
-from . import query_length, complexity, reformulation
+from . import query_length, complexity, reformulation, specificity
 
 
 def get_all_prompts(profile: dict) -> dict[str, str]:
-    """Return all prompt blocks for the given profile."""
+    """Return all prompt blocks for the given profile"""
     return {
         "query_length": query_length.get_prompt(profile),
         "complexity": complexity.get_prompt(profile),
         "reformulation": reformulation.get_prompt(profile),
-        # specificity, patience, word_choice
+        "specificity": specificity.get_prompt(profile),
+        # patience, word_choice
     }
 
