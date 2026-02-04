@@ -16,7 +16,12 @@ Install dependencies (Python 3.10):
 pip install -r requirements.txt
 ```
 
-Add replicate token:
+Add replicate token (linux):
+```bash
+export REPLICATE_API_TOKEN="token"
+```
+
+Add replicate token (powershell):
 ```bash
 $env:REPLICATE_API_TOKEN = "token"
 ```
