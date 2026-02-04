@@ -23,12 +23,13 @@ def build_prompt(profile_override: Optional[Dict[str, object]] = None) -> str:
     # Core instructions + profile + research-backed behaviour blocks
     sections = []
 
-    sections.append
-    """
+    sections.append(
+        """
         The task is to generate example search engine queries 
         for a user, based on their profile and empirically observed 
         search behaviour patterns.
-    """
+        """
+    )
 
     sections.append(
         f"User profile:\n"
@@ -44,15 +45,15 @@ def build_prompt(profile_override: Optional[Dict[str, object]] = None) -> str:
         sections.append(f"{label}:\n{text}")
 
     sections.append(
-    """
+        """
         Task:\n
         Generate a diverse list of search queries that this user might realistically type, 
         given their profile and the behaviour described above.\n
         - Use the described query length, complexity, specificity, reformulation style, 
-        patience, and word choice.\n"
+        patience, and word choice.\n
         - Focus on queries that match the user's goals and constraints.\n
         - Return only the queries, one per line, with no explanations or numbering.
-    """
+        """
     )
 
     return "\n\n".join(sections)
