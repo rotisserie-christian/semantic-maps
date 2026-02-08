@@ -31,5 +31,12 @@ Fill out the user profile in **`config.py`** and then run the script:
 python main.py 
 ```
 
+To generate more comprehensive results by running the LLM multiple times and consolidating the output (removing duplicates):
+```bash
+python main.py --runs 5
+```
+
+This will query the LLM 5 times, collect all unique search terms, and save them to a single consolidated CSV file.
+
 ## Dependencies 
 - **`Replicate`** - LLM API

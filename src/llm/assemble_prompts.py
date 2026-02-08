@@ -53,6 +53,8 @@ def build_prompt(profile_override: Optional[Dict[str, object]] = None) -> str:
         patience, and word choice.\n
         - Focus on queries that match the user's goals and constraints.\n
         - Return only the queries, one per line, with no explanations or numbering.
+        - Cluster them by search intent, each with a concise title 
+        - Return as many queries as possible, try to cover all possible angles that the user might take to search for what they want.
         """
     )
 
