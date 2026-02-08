@@ -32,6 +32,9 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
+# output files
+output/
+
 ## Python tooling
 .mypy_cache/
 .pytest_cache/

@@ -1,6 +1,6 @@
 profile = {
     # younger/older: drives query length, complexity, specificity, word choice
-    "age_group": "younger",
+    "age_group": "older",
 
     # novice/intermediate/expert: domain expertise for the search topic
     "domain_expertise": "novice",
@@ -18,6 +18,6 @@ profile = {
 replicate = {
     "env": "REPLICATE_API_TOKEN",
     "model": "deepseek-ai/deepseek-v3.1", # Model identifier
-    "max_tokens": 2048,
+    "max_tokens": 150048,
     "temperature": 1.0,
 }
