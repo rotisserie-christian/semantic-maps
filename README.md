@@ -1,12 +1,10 @@
-## Search Profiler 
+# Search Profiler 
 
 Creates search terms specific to the behaviour of a given user profile. It uses heuristics derived from research on user behaviour to construct an LLM prompt, and outputs the result in CSV format. 
 
 It uses Replicate to make it easy to experiment with different models. Keep in mind that pricing is token-based and varies by model, and a single search term will usually be around 100 tokens. The default is set to Deepseek v3, which currently costs around $3/million output tokens. 
 
-## How to use it
-
-### Quick start
+## Quick start
 
 Clone the repo:
 ```bash
@@ -33,7 +31,7 @@ Fill out the user profile in **`config.py`** and then run the script:
 python main.py 
 ```
 
-### Multiple runs 
+## Multiple runs 
 
 This will query the LLM 5 times, collect all unique search terms, and consolidate the output
 ```bash
