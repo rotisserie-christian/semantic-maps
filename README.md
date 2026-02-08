@@ -31,19 +31,22 @@ Fill out the user profile in **`config.py`** and then run the script:
 python main.py 
 ```
 
-## Multiple runs 
+## Multiple runs (optional/recommended)
 
-This will query the LLM 5 times, collect all unique search terms, and consolidate the output
+This will query the LLM x times, collect all unique search terms, and consolidate the output
 ```bash
-python main.py --runs 5
+python main.py --runs x
 ```
 
 It also consolidates the cluster titles based on semantic similarity
 
 Adjust the similarity threshold (default 0.75):
 ```bash
-python main.py --runs 5 --threshold 0.8
+python main.py --runs x --threshold y
 ```
+
+> [!WARNING]  
+> This creates a lot more output tokens. This is why I set the default model to Deepseek. A high number of runs with a more expensive model can create a massive bill very quickly. 
 
 ## Dependencies 
 - **`Replicate`** - LLM API
