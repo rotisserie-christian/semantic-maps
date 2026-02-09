@@ -125,27 +125,40 @@ def run_validation(
         q for q in query_list 
         if q in interest_data and interest_data[q]["avg_interest"] >= interest_threshold
     ]
-    print(f"  {len(validated_queries)} queries above threshold ({interest_threshold})")
+    
+    if not validated_queries and interest_data:
+        # Fallback: take top 5 queries by interest score
+        print(f"\nWarning: No queries meet the threshold of {interest_threshold}")
+        print("Falling back to top 5 queries with highest interest...")
+        
+        # Sort queries that have data by interest descending
+        sorted_by_interest = sorted(
+            interest_data.keys(),
+            key=lambda q: interest_data[q]["avg_interest"],
+            reverse=True
+        )
+        validated_queries = sorted_by_interest[:5]
+    
+    print(f"  {len(validated_queries)} queries for validation/expansion")
     
     if not validated_queries:
-        print(f"\nWarning: No queries meet the interest threshold of {interest_threshold}")
-        print(f"Consider lowering the threshold in src/validate/config.py")
-        print("\nSaving results with only generated queries...")
+        print(f"\nError: No queries meet the threshold and no interest data found for others.")
+        print(f"Consider lowering the interest_threshold in src/validate/config.py")
+        print("\nSaving results with all original queries...")
         
-        # Save what we have
+        # Save what we have (no expansion possible)
         from datetime import datetime
         timestamp = datetime.utcnow().isoformat() + "Z"
         results = []
         for cluster, query in original_queries:
-            if query in interest_data:
-                results.append({
-                    "cluster": cluster,
-                    "query": query,
-                    "source": "generated",
-                    "metrics": interest_data[query],
-                    "related_to": None,
-                    "timestamp": timestamp
-                })
+            results.append({
+                "cluster": cluster,
+                "query": query,
+                "source": "generated",
+                "metrics": interest_data.get(query, {"avg_interest": 0, "trend_direction": "unknown"}),
+                "related_to": None,
+                "timestamp": timestamp
+            })
         
         output_path = save_validated_json(results)
         return output_path
