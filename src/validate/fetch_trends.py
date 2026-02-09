@@ -1,7 +1,7 @@
 import os
 import time
 import requests
-from typing import List, Dict, Optional
+from typing import List, Dict
 from .config import serpapi_config
 
 
