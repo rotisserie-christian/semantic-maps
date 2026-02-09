@@ -187,7 +187,7 @@ def run_validation(
         interest_data,
         related_queries,
         related_interest,
-        interest_threshold,
+        validated_queries,
         related_threshold
     )
     

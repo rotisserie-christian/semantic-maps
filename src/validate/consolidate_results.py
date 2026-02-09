@@ -7,7 +7,7 @@ def consolidate_validated_results(
     interest_data: Dict[str, Dict], # query -> metrics
     related_queries: Dict[str, List[str]], # parent_query -> [related]
     related_interest: Dict[str, Dict], # related_query -> metrics
-    interest_threshold: float,
+    validated_query_list: List[str], # list of original queries to keep
     related_threshold: float
 ) -> List[Dict]:
     """
@@ -29,12 +29,11 @@ def consolidate_validated_results(
     
     # Process original queries
     for cluster, query in original_queries:
-        metrics = interest_data.get(query)
-        
-        if not metrics:
+        if query not in validated_query_list:
             continue
-        
-        if metrics["avg_interest"] >= interest_threshold:
+            
+        metrics = interest_data.get(query)
+        if metrics:
             validated.append({
                 "cluster": cluster,
                 "query": query,
