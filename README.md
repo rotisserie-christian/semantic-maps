@@ -1,6 +1,6 @@
 # Search Profiler 
 
-Creates search terms specific to the behaviour of a given user profile. It uses heuristics derived from research on user behaviour to construct an LLM prompt, and outputs the result in JSON format. 
+Creates & validates search terms specific to the behaviour of a given user profile. It uses heuristics derived from research on user behaviour to construct an LLM prompt, and outputs the result in JSON format. 
 
 It uses Replicate to make it easy to experiment with different models. You can then validate these search terms against Google Trends data via SerpAPI. 
 
@@ -24,14 +24,12 @@ pip install -r requirements.txt
 
 Add replicate token:
 ```bash
-export REPLICATE_API_TOKEN ="token" # Linux
-$env:REPLICATE_API_TOKEN = "token" # Powershell
+export REPLICATE_API_TOKEN ="token" 
 ```
 
 Add SerpAPI token:
 ```bash
-export SERPAPI_API_KEY ="token" # Linux
-$env:SERPAPI_API_KEY = "token" # Powershell
+export SERPAPI_API_KEY ="token" 
 ```
 
 Fill out the user profile in **`config.py`** and then run the script:
@@ -80,3 +78,4 @@ python main.py --validate output/searchterms1.json
 - **`sentence-transformers`** - semantic clustering
 - **`scikit-learn`** - cosine similarity
 - **`numpy`** - numerical operations
+- **`requests`** - HTTP requests
