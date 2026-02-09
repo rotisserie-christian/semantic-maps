@@ -8,10 +8,10 @@ from .config import serpapi_config
 class TrendsAPIClient:
     """Get Google Trends data with SerpAPI"""
     
-    def __init__(self, api_key: Optional[str] = None):
-        """Args: api_key: SerpAPI key. If not provided, reads from environment variable"""
+    def __init__(self):
+        """Initializes client using environment variable for API key"""
         env_var = serpapi_config["env"]
-        self.api_key = api_key or os.getenv(env_var)
+        self.api_key = os.getenv(env_var)
         
         if not self.api_key:
             raise RuntimeError(
