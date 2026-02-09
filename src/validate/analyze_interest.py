@@ -21,13 +21,26 @@ def calculate_interest_metrics(timeline_data: List[Dict]) -> Dict:
     
     # Extract all values (handle multiple queries in timeline)
     all_values = []
+    
+    def to_float(val):
+        if isinstance(val, (int, float)):
+            return float(val)
+        if isinstance(val, str):
+            if "<" in val:
+                return 0.5
+            try:
+                return float(val)
+            except ValueError:
+                return 0.0
+        return 0.0
+
     for point in timeline_data:
         if "values" in point:
             # Multiple queries: values is a list of dicts with 'value' key
-            all_values.extend([v["value"] for v in point["values"] if "value" in v])
+            all_values.extend([to_float(v["value"]) for v in point["values"] if "value" in v])
         elif "value" in point:
             # Single query: direct value
-            all_values.append(point["value"])
+            all_values.append(to_float(point["value"]))
     
     if not all_values:
         return {
