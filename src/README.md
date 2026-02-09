@@ -5,5 +5,5 @@
 
 ### Flow
 ```
-User profile  ->  Prompt construction  ->  LLM  ->  CSV 
+User profile  ->  Prompt construction  ->  LLM  ->  Output -> Manual pruning -> Validate -> u take it from here :)
 ```
