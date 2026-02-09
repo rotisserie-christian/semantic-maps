@@ -62,6 +62,19 @@ I would recommend pruning any slop generations from the JSON output before valid
 
 This needs to be done to the JSON file in particular, since this is the format used to call SerpAPI. The TXT and CSV outputs are meant for quick readability and export, and are not used in the actual script itself. 
 
+## Validation
+
+Run the **`--validate`** flag to filter out terms with low interest and discover related queries that are currently trending.
+
+This flag will call SerpAPI instead of Replicate. You will need to include the JSON file as an argument.
+
+```bash
+python main.py --validate output/searchterms1.json
+```
+
+> [!NOTE]  
+> It has to be the JSON file, not the CSV or TXT file.
+
 ## Dependencies 
 - **`Replicate`** - LLM API
 - **`sentence-transformers`** - semantic clustering
