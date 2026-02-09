@@ -1,7 +1,7 @@
 ### src
 - **`/heuristics`** - Logic for inferring search behaviour 
 - **`/llm`** - Prompt + output file construction, querying the LLM
-- - **`/validate`** - Logic for validating search terms 
+- **`/validate`** - Logic for validating search terms 
 - **`config.py`** - User profile and llm settings 
 
 ### Flow
