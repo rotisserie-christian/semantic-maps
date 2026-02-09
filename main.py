@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 from src.llm.query_llm import query_llm
 from src.llm.consolidate import generate_consolidated_clusters
 from src.llm.save_output import (
@@ -7,6 +8,7 @@ from src.llm.save_output import (
     save_clustered_queries_to_txt,
     save_clustered_queries_to_json
 )
+from src.validate import run_validation
 
 
 def main() -> None:
@@ -14,6 +16,7 @@ def main() -> None:
     - builds a prompt for the default profile
     - queries the LLM (optionally multiple times with semantic clustering)
     - saves the resulting queries to output/searchtermsN.csv
+    - optionally validates queries with Google Trends data
     """
     parser = argparse.ArgumentParser(
         description="Generate search queries based on user profile"
@@ -30,12 +33,48 @@ def main() -> None:
         default=0.75,
         help="Similarity threshold for merging clusters when using --runs (0-1, default: 0.75)"
     )
+    parser.add_argument(
+        "--validate",
+        type=str,
+        default=None,
+        metavar="JSON_FILE",
+        help="Validate queries from JSON file using Google Trends (e.g., output/searchterms1.json)"
+    )
     
     args = parser.parse_args()
     
+    # If validation mode, run validation and exit
+    if args.validate:
+        input_path = Path(args.validate)
+        
+        if not input_path.exists():
+            print(f"Error: File not found: {input_path}")
+            print("\nMake sure you've generated queries first:")
+            print("  python main.py --runs 3")
+            return
+        
+        print("="*60)
+        print(f"VALIDATION: Validating {input_path}")
+        print("="*60 + "\n")
+        
+        try:
+            validated_path = run_validation(input_path)
+            
+            if validated_path:
+                print(f"\n{'='*60}")
+                print("Validation complete!")
+                print("="*60)
+                print(f"Results saved to: {validated_path}")
+        except Exception as e:
+            print(f"\nValidation failed: {e}")
+            import traceback
+            traceback.print_exc()
+        
+        return
+    
     # Generate queries
     if args.runs > 1:
-        # Multiple runs: Use semantic clustering with cluster consolidation
+        # Multiple runs
         print(f"Running LLM {args.runs} times with semantic clustering (threshold={args.threshold})...\n")
         clustered_queries = generate_consolidated_clusters(args.runs, args.threshold)
         
@@ -63,7 +102,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-
-
