@@ -1,10 +1,16 @@
 # Search Profiler 
 
-Creates search terms specific to the behaviour of a given user profile. It uses heuristics derived from research on user behaviour to construct an LLM prompt, and outputs the result in CSV format. 
+Creates search terms specific to the behaviour of a given user profile. It uses heuristics derived from research on user behaviour to construct an LLM prompt, and outputs the result in JSON format. 
 
-It uses Replicate to make it easy to experiment with different models. Keep in mind that pricing is token-based and varies by model, and a single search term will usually be around 100 tokens. The default is set to Deepseek v3, which currently costs around $3/million output tokens. 
+It uses Replicate to make it easy to experiment with different models. You can then validate these search terms against Google Trends data via SerpAPI. 
 
-## Quick start
+> [!WARNING]  
+> Pricing on Replicate is token-based and varies by model. SerpAPI is also usage based, and this script can very easily burn through API credits. I would recommend using small sets of search terms until you're familiar with using this script. 
+
+> [!TIP]
+> Adjust max_tokens in src/config.py to limit the number of generated terms. Usually ~100 tokens = 1 search term. SerpAPI will not be called unless you run the --validate flag, more info is below. 
+
+## Set up
 
 Clone the repo:
 ```bash
@@ -16,14 +22,16 @@ Install dependencies (Python 3.10):
 pip install -r requirements.txt
 ```
 
-Add replicate token (linux):
+Add replicate token:
 ```bash
-export REPLICATE_API_TOKEN="token"
+export REPLICATE_API_TOKEN ="token" # Linux
+$env:REPLICATE_API_TOKEN = "token" # Powershell
 ```
 
-Add replicate token (powershell):
+Add SerpAPI token:
 ```bash
-$env:REPLICATE_API_TOKEN = "token"
+export SERPAPI_API_KEY ="token" # Linux
+$env:SERPAPI_API_KEY = "token" # Powershell
 ```
 
 Fill out the user profile in **`config.py`** and then run the script:
@@ -31,14 +39,14 @@ Fill out the user profile in **`config.py`** and then run the script:
 python main.py 
 ```
 
-## Multiple runs (optional/recommended)
+## Multiple runs 
 
 This will query the LLM x times, collect all unique search terms, and consolidate the output
 ```bash
 python main.py --runs x
 ```
 
-It also consolidates the cluster titles based on semantic similarity
+This also consolidates the cluster titles based on semantic similarity
 
 Adjust the similarity threshold (default 0.75):
 ```bash
@@ -47,6 +55,12 @@ python main.py --runs x --threshold y
 
 > [!WARNING]  
 > This creates a lot more output tokens. This is why I set the default model to Deepseek. A high number of runs with a more expensive model can create a massive bill very quickly. 
+
+## Manual pruning 
+
+I would recommend pruning any slop generations from the JSON output before validating. This will conserve API credits. 
+
+This needs to be done to the JSON file in particular, since this is the format used to call SerpAPI. The TXT and CSV outputs are meant for quick readability and export, and are not used in the actual script itself. 
 
 ## Dependencies 
 - **`Replicate`** - LLM API
