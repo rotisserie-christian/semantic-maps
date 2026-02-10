@@ -10,6 +10,8 @@ from src.llm.save_output import (
 )
 from src.validate import run_validation
 from src.timeseries import run_timeseries
+from src.slope import run_slope_analysis
+
 
 
 
@@ -49,6 +51,14 @@ def main() -> None:
         metavar="VALIDATED_JSON",
         help="Fetch interest over time for queries in a validated JSON file (e.g., output/validatedterms1.json)"
     )
+    parser.add_argument(
+        "--slope",
+        type=str,
+        default=None,
+        metavar="TIMESERIES_JSON",
+        help="Calculate rate of change for queries in a timeseries JSON file (e.g., output/timeseries/timeseries1.json)"
+    )
+
 
     
     args = parser.parse_args()
@@ -108,6 +118,34 @@ def main() -> None:
             traceback.print_exc()
         
         return
+    
+    # If slope mode, run slope analysis and exit
+    if args.slope:
+        input_path = Path(args.slope)
+        
+        if not input_path.exists():
+            print(f"Error: File not found: {input_path}")
+            return
+            
+        print("="*60)
+        print(f"SLOPE: Calculating rate of change for {input_path}")
+        print("="*60 + "\n")
+        
+        try:
+            slope_path = run_slope_analysis(input_path)
+            
+            if slope_path:
+                print(f"\n{'='*60}")
+                print("Slope analysis complete!")
+                print("="*60)
+                print(f"Results saved to: {slope_path}")
+        except Exception as e:
+            print(f"\nSlope analysis failed: {e}")
+            import traceback
+            traceback.print_exc()
+        
+        return
+
 
     
     # Generate queries
