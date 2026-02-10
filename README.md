@@ -60,9 +60,20 @@ I would recommend pruning any slop generations from the JSON output before valid
 
 This needs to be done to the JSON file in particular, since this is the format used to call SerpAPI. The TXT and CSV outputs are meant for quick readability and export, and are not used in the actual script itself. 
 
+## Manual addition
+
+You can also add your own queries to the JSON file
+
+cd into **`src/utils`** and run:
+```bash
+python add_query.py searchtermsN.json
+```
+
+This will check if it exists, if it doesn't, it will use sentence-transformers to find the best matching cluster and add the query to it. 
+
 ## Validation
 
-Run the **`--validate`** flag to filter out terms with low interest and discover related queries that are currently trending.
+Run the **`--validate`** flag to get a new JSON file containing search interest data for each term. 
 
 This flag will call SerpAPI instead of Replicate. You will need to include the JSON file as an argument.
 
