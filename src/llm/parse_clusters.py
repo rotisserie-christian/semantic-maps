@@ -19,7 +19,7 @@ def parse_clustered_output(raw_text: str) -> List[Dict[str, object]]:
         List of dicts with 'cluster' and 'queries' keys
     """
     clusters = []
-    current_cluster = None
+    current_cluster = "General"  # Use a default cluster if none are found first
     current_queries = []
     
     for line in raw_text.splitlines():

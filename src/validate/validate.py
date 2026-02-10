@@ -3,8 +3,6 @@ from pathlib import Path
 from typing import List, Dict, Tuple
 from .fetch_trends import TrendsAPIClient
 from .analyze_interest import extract_query_interest_from_batch
-from .fetch_related import fetch_related_for_queries
-from .consolidate_results import consolidate_validated_results
 from .save_validated import save_validated_json
 from .config import serpapi_config, validation_config
 
@@ -75,7 +73,7 @@ def run_validation(
     input_json_path: str | Path
 ) -> Path:
     """
-    Run the complete validation workflow
+    Run simplified validation: fetch interest for all queries and return them.
     
     Args:
         input_json_path: Path to generated searchtermsN.json
@@ -85,120 +83,54 @@ def run_validation(
     """
     input_path = Path(input_json_path)
     
-    # Load config values
-    interest_threshold = validation_config["interest_threshold"]
-    related_threshold = validation_config["related_threshold"]
-    max_related_per_query = validation_config["max_related_per_query"]
-    
     # Initialize API client
     print("Initializing SerpAPI client...")
     try:
         client = TrendsAPIClient()
     except RuntimeError as e:
         print(f"\nError: {e}")
-        print("\nTo fix this:")
-        print("1. Get your API key at https://serpapi.com/manage-api-key")
-        print("2. Set environment variable:")
-        print("   Linux/Mac: export SERPAPI_API_KEY='your_key_here'")
-        print("   Windows:   $env:SERPAPI_API_KEY = 'your_key_here'")
         raise
     
     # 1. Load generated queries
     print(f"\nLoading generated queries from {input_path}...")
     original_queries = load_generated_queries(input_path)
-    unique_clusters = len(set(c for c, q in original_queries))
-    print(f"  Loaded {len(original_queries)} queries from {unique_clusters} clusters")
-    
     if not original_queries:
         print("\nError: No queries found in input file.")
-        print("Make sure the JSON file has the correct format.")
         return None
     
     # 2. Fetch interest for all generated queries
-    print(f"\nFetching interest data for generated queries...")
+    print(f"\nFetching interest data for {len(original_queries)} queries...")
     query_list = [q for c, q in original_queries]
     interest_data = batch_fetch_interest(query_list, client)
-    print(f"  Got interest data for {len(interest_data)}/{len(query_list)} queries")
     
-    # 3. Filter to high performers
-    validated_queries = [
-        q for q in query_list 
-        if q in interest_data and interest_data[q]["avg_interest"] >= interest_threshold
-    ]
+    # 3. Format results for all original queries
+    from datetime import datetime
+    timestamp = datetime.utcnow().isoformat() + "Z"
+    results = []
     
-    if not validated_queries and interest_data:
-        # Fallback: take top 5 queries by interest score
-        print(f"\nWarning: No queries meet the threshold of {interest_threshold}")
-        print("Falling back to top 5 queries with highest interest...")
+    for cluster, query in original_queries:
+        metrics = interest_data.get(query, {
+            "avg_interest": 0, 
+            "max_interest": 0, 
+            "min_interest": 0, 
+            "trend_direction": "unknown",
+            "data_points": 0
+        })
         
-        # Sort queries that have data by interest descending
-        sorted_by_interest = sorted(
-            interest_data.keys(),
-            key=lambda q: interest_data[q]["avg_interest"],
-            reverse=True
-        )
-        validated_queries = sorted_by_interest[:5]
+        results.append({
+            "cluster": cluster,
+            "query": query,
+            "source": "generated",
+            "metrics": metrics,
+            "related_to": None,
+            "timestamp": timestamp
+        })
     
-    print(f"  {len(validated_queries)} queries for validation/expansion")
+    # Sort by avg_interest descending
+    results.sort(key=lambda x: x["metrics"]["avg_interest"], reverse=True)
     
-    if not validated_queries:
-        print(f"\nError: No queries meet the threshold and no interest data found for others.")
-        print(f"Consider lowering the interest_threshold in src/validate/config.py")
-        print("\nSaving results with all original queries...")
-        
-        # Save what we have (no expansion possible)
-        from datetime import datetime
-        timestamp = datetime.utcnow().isoformat() + "Z"
-        results = []
-        for cluster, query in original_queries:
-            results.append({
-                "cluster": cluster,
-                "query": query,
-                "source": "generated",
-                "metrics": interest_data.get(query, {"avg_interest": 0, "trend_direction": "unknown"}),
-                "related_to": None,
-                "timestamp": timestamp
-            })
-        
-        output_path = save_validated_json(results)
-        return output_path
+    # 4. Save to JSON
+    output_path = save_validated_json(results)
     
-    # 4. Fetch related queries for validated terms
-    print(f"\nFetching related queries for validated terms (max {max_related_per_query} per query)...")
-    related_queries = fetch_related_for_queries(validated_queries, client, max_related_per_query)
-    
-    total_related = sum(len(r) for r in related_queries.values())
-    print(f"  Found {total_related} related queries from {len(related_queries)} parent queries")
-    
-    # 5. Fetch interest for all unique related queries
-    if total_related > 0:
-        print(f"\nFetching interest data for related queries...")
-        all_related = list(set(q for queries in related_queries.values() for q in queries))
-        related_interest = batch_fetch_interest(all_related, client)
-        print(f"  Got interest data for {len(related_interest)}/{len(all_related)} related queries")
-    else:
-        related_interest = {}
-        print("\n  No related queries to validate")
-    
-    # 6. Consolidate results
-    print(f"\nConsolidating results...")
-    validated_results = consolidate_validated_results(
-        original_queries,
-        interest_data,
-        related_queries,
-        related_interest,
-        validated_queries,
-        related_threshold
-    )
-    
-    generated_count = sum(1 for v in validated_results if v["source"] == "generated")
-    related_count = sum(1 for v in validated_results if v["source"] == "related")
-    
-    print(f"  Final validated set: {len(validated_results)} queries")
-    print(f"    - {generated_count} from generated queries")
-    print(f"    - {related_count} from related queries")
-    
-    # 7. Save to JSON
-    output_path = save_validated_json(validated_results)
-    
+    print(f"\nValidation complete! Saved results for {len(results)} queries to {output_path}")
     return output_path

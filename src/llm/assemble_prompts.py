@@ -46,15 +46,26 @@ def build_prompt(profile_override: Optional[Dict[str, object]] = None) -> str:
 
     sections.append(
         """
-        Task:\n
+        Task:
         Generate a diverse list of search queries that this user might realistically type, 
-        given their profile and the behaviour described above.\n
+        given their profile and the behaviour described above.
+
         - Use the described query length, complexity, specificity, reformulation style, 
-        patience, and word choice.\n
-        - Focus on queries that match the user's goals and constraints.\n
-        - Return only the queries, one per line, with no explanations or numbering.
-        - Cluster them by search intent, each with a concise title 
-        - Return as many queries as possible, try to cover all possible angles that the user might take to search for what they want.
+        patience, and word choice.
+        - Focus on queries that match the user's goals and constraints.
+        - Cluster the queries by search intent.
+        - Each cluster must have a concise title followed by a colon, then the queries on separate lines.
+        - Return as many queries as possible, try to cover all possible angles.
+        - Include both specific and generic queries.
+
+        Format:
+        Cluster Title 1:
+        query 1
+        query 2
+
+        Cluster Title 2:
+        query 3
+        query 4
         """
     )
 

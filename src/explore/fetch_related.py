@@ -1,5 +1,5 @@
 from typing import List, Dict
-from .fetch_trends import TrendsAPIClient
+from src.validate.fetch_trends import TrendsAPIClient
 
 
 def extract_related_queries(
