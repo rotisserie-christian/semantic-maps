@@ -83,7 +83,7 @@ def run_validation(
     """
     input_path = Path(input_json_path)
     
-    # Initialize API client
+    # Initialize API
     print("Initializing SerpAPI client...")
     try:
         client = TrendsAPIClient()
@@ -91,19 +91,19 @@ def run_validation(
         print(f"\nError: {e}")
         raise
     
-    # 1. Load generated queries
+    # Load generated queries
     print(f"\nLoading generated queries from {input_path}...")
     original_queries = load_generated_queries(input_path)
     if not original_queries:
         print("\nError: No queries found in input file.")
         return None
     
-    # 2. Fetch interest for all generated queries
+    # Fetch interest for all queries
     print(f"\nFetching interest data for {len(original_queries)} queries...")
     query_list = [q for c, q in original_queries]
     interest_data = batch_fetch_interest(query_list, client)
     
-    # 3. Filter and format results (omitting queries with 0 data)
+    # Omit queries with 0 data
     from datetime import datetime
     timestamp = datetime.utcnow().isoformat() + "Z"
     results = []
@@ -125,7 +125,7 @@ def run_validation(
     # Sort by avg_interest descending
     results.sort(key=lambda x: x["metrics"]["avg_interest"], reverse=True)
     
-    # 4. Save to JSON
+    # Save to JSON
     output_path = save_validated_json(results)
     
     print(f"\nValidation complete! Saved results for {len(results)} queries (omitted {omitted_count} with 0 data) to {output_path}")
