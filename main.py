@@ -9,6 +9,8 @@ from src.llm.save_output import (
     save_clustered_queries_to_json
 )
 from src.validate import run_validation
+from src.timeseries import run_timeseries
+
 
 
 def main() -> None:
@@ -40,6 +42,14 @@ def main() -> None:
         metavar="JSON_FILE",
         help="Validate queries from JSON file using Google Trends (e.g., output/searchterms1.json)"
     )
+    parser.add_argument(
+        "--timeseries",
+        type=str,
+        default=None,
+        metavar="VALIDATED_JSON",
+        help="Fetch interest over time for queries in a validated JSON file (e.g., output/validatedterms1.json)"
+    )
+
     
     args = parser.parse_args()
     
@@ -71,6 +81,34 @@ def main() -> None:
             traceback.print_exc()
         
         return
+    
+    # If timeseries mode, run timeseries and exit
+    if args.timeseries:
+        input_path = Path(args.timeseries)
+        
+        if not input_path.exists():
+            print(f"Error: File not found: {input_path}")
+            return
+            
+        print("="*60)
+        print(f"TIMESERIES: Fetching interest over time for {input_path}")
+        print("="*60 + "\n")
+        
+        try:
+            ts_path = run_timeseries(input_path)
+            
+            if ts_path:
+                print(f"\n{'='*60}")
+                print("Timeseries analysis complete!")
+                print("="*60)
+                print(f"Results saved to: {ts_path}")
+        except Exception as e:
+            print(f"\nTimeseries analysis failed: {e}")
+            import traceback
+            traceback.print_exc()
+        
+        return
+
     
     # Generate queries
     if args.runs > 1:
