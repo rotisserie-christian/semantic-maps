@@ -103,28 +103,24 @@ def run_validation(
     query_list = [q for c, q in original_queries]
     interest_data = batch_fetch_interest(query_list, client)
     
-    # 3. Format results for all original queries
+    # 3. Filter and format results (omitting queries with 0 data)
     from datetime import datetime
     timestamp = datetime.utcnow().isoformat() + "Z"
     results = []
+    omitted_count = 0
     
     for cluster, query in original_queries:
-        metrics = interest_data.get(query, {
-            "avg_interest": 0, 
-            "max_interest": 0, 
-            "min_interest": 0, 
-            "trend_direction": "unknown",
-            "data_points": 0
-        })
-        
-        results.append({
-            "cluster": cluster,
-            "query": query,
-            "source": "generated",
-            "metrics": metrics,
-            "related_to": None,
-            "timestamp": timestamp
-        })
+        if query in interest_data:
+            results.append({
+                "cluster": cluster,
+                "query": query,
+                "source": "generated",
+                "metrics": interest_data[query],
+                "related_to": None,
+                "timestamp": timestamp
+            })
+        else:
+            omitted_count += 1
     
     # Sort by avg_interest descending
     results.sort(key=lambda x: x["metrics"]["avg_interest"], reverse=True)
@@ -132,5 +128,5 @@ def run_validation(
     # 4. Save to JSON
     output_path = save_validated_json(results)
     
-    print(f"\nValidation complete! Saved results for {len(results)} queries to {output_path}")
+    print(f"\nValidation complete! Saved results for {len(results)} queries (omitted {omitted_count} with 0 data) to {output_path}")
     return output_path
