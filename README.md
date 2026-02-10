@@ -32,7 +32,7 @@ Add SerpAPI token:
 export SERPAPI_API_KEY ="token" 
 ```
 
-Fill out the user profile in **`config.py`** and then run the script:
+Fill out the user profile in **`src/config.py`** and then run the script:
 ```bash
 python main.py 
 ```
