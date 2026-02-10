@@ -8,7 +8,7 @@ It uses Replicate to make it easy to experiment with different models. You can t
 > Pricing on Replicate is token-based and varies by model. SerpAPI is also usage based, and this script can very easily burn through API credits. I would recommend using small sets of search terms until you're familiar with using this script. 
 
 > [!TIP]
-> Adjust max_tokens in src/config.py to limit the number of generated terms. Usually ~100 tokens = 1 search term. SerpAPI will not be called unless you run the --validate flag, more info is below. 
+> Adjust max_tokens in src/config.py to limit the number of generated terms. Usually ~100 tokens = 1 search term.
 
 ## Set up
 
@@ -22,17 +22,7 @@ Install dependencies (Python 3.10):
 pip install -r requirements.txt
 ```
 
-Add replicate token:
-```bash
-export REPLICATE_API_TOKEN ="token" 
-```
-
-Add SerpAPI token:
-```bash
-export SERPAPI_API_KEY ="token" 
-```
-
-Fill out the user profile in **`src/config.py`** and then run the script:
+Add your **`REPLICATE_API_TOKEN`** and **`SERPAPI_API_KEY`**, fill out the user profile in **`src/config.py`** and then run the script:
 ```bash
 python main.py 
 ```
