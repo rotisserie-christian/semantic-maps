@@ -71,6 +71,7 @@ This needs to be done to the JSON file in particular, since this is the format u
 ## Manual addition
 
 You can also add your own queries to the JSON file
+
 cd into **`src/utils`** and run:
 
 ```bash
