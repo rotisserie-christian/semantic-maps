@@ -21,7 +21,7 @@ def extract_related_queries(
     
     queries = []
     
-    # Extract from "top" related queries
+    # Extract from top related queries
     top = api_response.get("related_queries", {}).get("top", [])
     for item in top:
         if "query" in item:

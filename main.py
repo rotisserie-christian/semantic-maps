@@ -58,6 +58,13 @@ def main() -> None:
         metavar="TIMESERIES_JSON",
         help="Calculate rate of change for queries in a timeseries JSON file (e.g., output/timeseries/timeseries1.json)"
     )
+    parser.add_argument(
+        "--explore",
+        type=str,
+        default=None,
+        metavar="VALIDATED_JSON",
+        help="Fetch related queries for queries in a validated JSON file (e.g., output/validatedterms1.json)"
+    )
 
 
     
@@ -141,6 +148,37 @@ def main() -> None:
                 print(f"Results saved to: {slope_path}")
         except Exception as e:
             print(f"\nSlope analysis failed: {e}")
+            import traceback
+            traceback.print_exc()
+        
+        return
+
+        # If explore mode, run exploration and exit
+    if args.explore:
+        input_path = Path(args.explore)
+        
+        if not input_path.exists():
+            print(f"Error: File not found: {input_path}")
+            return
+            
+        print("="*60)
+        print(f"EXPLORE: Fetching related queries for {input_path}")
+        print("="*60 + "\n")
+        
+        try:
+            from src.explore import run_explore
+            updated_path = run_explore(input_path)
+            
+            if updated_path:
+                print(f"\n{'='*60}")
+                print("Exploration complete!")
+                print("="*60)
+                print(f"Updated file: {updated_path}")
+                print("\nNext steps:")
+                print(f"  - Review the updated file: {updated_path}")
+                print(f"  - Validate if needed: python main.py --validate {updated_path}")
+        except Exception as e:
+            print(f"\nExploration failed: {e}")
             import traceback
             traceback.print_exc()
         
