@@ -74,6 +74,9 @@ This will call serpAPI to retrieve related queries for each search term if they 
 python main.py --explore output/searchtermsN.json
 ```
 
+> [!WARNING]  
+> This step can use a lot of serpAPI credits. It also tends to return queries that are less relevant to the specific search intent of the given user profile. However, it can sometimes return highly valuable queries. Just be aware that this is an optional step with a slot machine mechanic baked into it. 
+
 ## Validation
 
 Run the **`--validate`** flag to get a new JSON file containing search interest data for each term. It will omit any terms with 0 data and write the result to `/output/validatedtermsN.json`
