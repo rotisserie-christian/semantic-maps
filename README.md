@@ -4,6 +4,8 @@ Toolkit for researching search terms specific to the behaviour of a given user p
 
 It uses Replicate to make it easy to experiment with different models. You can then validate these search terms against Google Trends data via SerpAPI. 
 
+It will remove the left tail and then you can either add more yourself, and/or call SerpAPI to retrieve more relevant keywords from your set. Once you've compiled a final set of search terms, you can fetch historical data and calculate the rate of change for each query. 
+
 > [!WARNING]  
 > Pricing on Replicate is token-based and varies by model. SerpAPI is also usage based, and this script can very easily burn through API credits. I would recommend using small sets of search terms until you're familiar with using this script. 
 
