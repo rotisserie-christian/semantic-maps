@@ -1,10 +1,10 @@
 # Search Profiler 
 
-Toolkit for researching search terms specific to the behaviour of a given user profile. It uses heuristics derived from research on user behaviour to construct an LLM prompt, and outputs the result in JSON format. 
+Toolkit for researching search terms specific to the behaviour of a given user profile. 
 
-It uses Replicate to make it easy to experiment with different models. You can then validate these search terms against Google Trends data via SerpAPI. 
+It uses an LLM workflow to explore as many potential branches of search intent as possible. AI excels at divergent exploration, but is quite flawed on how it converges on the best outcome. Human discretion is equaly flawed, although less so, and empirical data remains the gold standard for this sort of thing. 
 
-It will remove the left tail and then you can either add more yourself, and/or call SerpAPI to retrieve more relevant keywords from your set. Once you've compiled a final set of search terms, you can fetch historical data and calculate the rate of change for each query. 
+This puts the human user and the LLM in their proper roles to create the best possible list of preliminary search terms.
 
 > [!WARNING]  
 > Pricing on Replicate is token-based and varies by model. SerpAPI is also usage based, and this script can very easily burn through API credits. I would recommend using small sets of search terms until you're familiar with using this script. 
