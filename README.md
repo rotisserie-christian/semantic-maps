@@ -58,7 +58,7 @@ cd into **`src/utils`** and run:
 python add_query.py searchtermsN.json
 ```
 
-This will check if it exists, if it doesn't, it will use sentence-transformers to find the best matching cluster and add the query to it. 
+This will check if it exists, if it doesn't, it will use `**sentence-transformers`** to find the best matching cluster and add the query to it. 
 
 ## Explore related terms 
 
@@ -69,7 +69,7 @@ python main.py --explore output/searchtermsN.json
 
 ## Validation
 
-Run the **`--validate`** flag to get a new JSON file containing search interest data for each term. It will omit any terms with 0 data and write the result to /output/validatedtermsN.json.
+Run the **`--validate`** flag to get a new JSON file containing search interest data for each term. It will omit any terms with 0 data and write the result to `**/output/validatedtermsN.json`**
 
 This flag will call SerpAPI instead of Replicate. You will need to include the JSON file as an argument.
 ```bash
@@ -78,6 +78,17 @@ python main.py --validate output/searchterms1.json
 
 > [!NOTE]  
 > It has to be the JSON file, not the CSV or TXT file.
+
+## Time Series 
+
+Run **`--timeseries`** flag to get search interest over time for each term. It takes in a validatedtermsN.json file and writes the result to `**/output/timeseries/timeseriesN.json`**
+```bash
+python main.py --timeseries output/validatedterms1.json
+```
+
+The time period is set in **`src/validate/config.py`** 
+
+It uses 3-month by default since this is the longest period that still provides daily data. If you want to use a different period you may need to modify the script. 
 
 ## Dependencies 
 - **`Replicate`** - LLM API
