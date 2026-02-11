@@ -6,8 +6,3 @@
 - **`/utils`** - Scripts for making manual edits 
 - **`/validate`** - Return search terms that contain enough data to work with 
 - **`config.py`** - User profile and llm settings 
-
-### Flow
-```
-User profile  ->  Prompt construction  ->  LLM  ->  Output -> Manual pruning -> Add more queries (add manually or call serpAPI for related terms) -> Time series -> Slope
-```
