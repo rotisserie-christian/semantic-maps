@@ -93,9 +93,7 @@ python main.py --explore output/searchtermsN.json
 
 ## Validation
 
-Run the **`--validate`** flag to get a new JSON file containing search interest data for each term. It will omit any terms with 0 data and write the result to `/output/validatedtermsN.json`
-
-This flag will call SerpAPI instead of Replicate. You will need to include the JSON file as an argument.
+Run the **`--validate`** flag to call SerpAPI, creating a new JSON file containing search interest data for each term. It will omit any terms with 0 data and write the result to `/output/validatedtermsN.json`
 
 ```bash
 python main.py --validate output/searchtermsN.json
