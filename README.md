@@ -13,16 +13,19 @@ It uses Replicate to make it easy to experiment with different models. You can t
 ## Set up
 
 Clone the repo:
+
 ```bash
 git clone https://github.com/rotisserie-christian/search-profiler
 ```
 
 Install dependencies (Python 3.10):
+
 ```bash
 pip install -r requirements.txt
 ```
 
 Add your **`REPLICATE_API_TOKEN`** and **`SERPAPI_API_KEY`**, fill out the user profile in **`src/config.py`** and then run the script:
+
 ```bash
 python main.py 
 ```
@@ -30,6 +33,7 @@ python main.py
 ## Multiple runs 
 
 This will query the LLM x times, collect all unique search terms, and consolidate the output
+
 ```bash
 python main.py --runs x
 ```
@@ -37,6 +41,7 @@ python main.py --runs x
 This also consolidates the cluster titles based on semantic similarity
 
 Adjust the similarity threshold (default 0.75):
+
 ```bash
 python main.py --runs x --threshold y
 ```
@@ -54,26 +59,29 @@ This needs to be done to the JSON file in particular, since this is the format u
 
 You can also add your own queries to the JSON file
 cd into **`src/utils`** and run:
+
 ```bash
 python add_query.py searchtermsN.json
 ```
 
-This will check if it exists, if it doesn't, it will use `**sentence-transformers`** to find the best matching cluster and add the query to it. 
+This will check if it exists, if it doesn't, it will use `sentence-transformers` to find the best matching cluster and add the query to it. 
 
 ## Explore related terms 
 
 This will call serpAPI to retrieve related queries for each search term if they exist, and add them to the appropriate cluster. It takes in a searchtermsN.json file as an argument and writes the new terms to the same file.
+
 ```bash
 python main.py --explore output/searchtermsN.json
 ```
 
 ## Validation
 
-Run the **`--validate`** flag to get a new JSON file containing search interest data for each term. It will omit any terms with 0 data and write the result to `**/output/validatedtermsN.json`**
+Run the **`--validate`** flag to get a new JSON file containing search interest data for each term. It will omit any terms with 0 data and write the result to `/output/validatedtermsN.json`
 
 This flag will call SerpAPI instead of Replicate. You will need to include the JSON file as an argument.
+
 ```bash
-python main.py --validate output/searchterms1.json
+python main.py --validate output/searchtermsN.json
 ```
 
 > [!NOTE]  
@@ -81,14 +89,24 @@ python main.py --validate output/searchterms1.json
 
 ## Time Series 
 
-Run **`--timeseries`** flag to get search interest over time for each term. It takes in a validatedtermsN.json file and writes the result to `**/output/timeseries/timeseriesN.json`**
+Run the **`--timeseries`** flag to get search interest over time for each term. It takes in a validatedtermsN.json file and writes the result to `/output/timeseries/timeseriesN.json`
 ```bash
-python main.py --timeseries output/validatedterms1.json
+python main.py --timeseries output/validatedtermsN.json
 ```
 
 The time period is set in **`src/validate/config.py`** 
 
 It uses 3-month by default since this is the longest period that still provides daily data. If you want to use a different period you may need to modify the script. 
+
+## Slope
+
+Run the **`--slope`** flag with the `timeseriesN.json` file as an argument to calculate the rate of change for each search term, and write the result to `/output/slope/timeseriesslopeN.json`
+
+```bash
+python main.py --slope output/timeseries/timeseriesN.json
+```
+
+The output will contain `slope` as a single value for each query, along with `avg_interest`, `max_interest`, and `cluster` 
 
 ## Dependencies 
 - **`Replicate`** - LLM API
