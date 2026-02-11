@@ -53,7 +53,6 @@ This needs to be done to the JSON file in particular, since this is the format u
 ## Manual addition
 
 You can also add your own queries to the JSON file
-
 cd into **`src/utils`** and run:
 ```bash
 python add_query.py searchtermsN.json
@@ -61,12 +60,18 @@ python add_query.py searchtermsN.json
 
 This will check if it exists, if it doesn't, it will use sentence-transformers to find the best matching cluster and add the query to it. 
 
+## Explore related terms 
+
+This will call serpAPI to retrieve related queries for each search term if they exist, and add them to the appropriate cluster. It takes in a searchtermsN.json file as an argument and writes the new terms to the same file.
+```bash
+python main.py --explore output/searchtermsN.json
+```
+
 ## Validation
 
 Run the **`--validate`** flag to get a new JSON file containing search interest data for each term. 
 
 This flag will call SerpAPI instead of Replicate. You will need to include the JSON file as an argument.
-
 ```bash
 python main.py --validate output/searchterms1.json
 ```
