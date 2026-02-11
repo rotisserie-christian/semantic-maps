@@ -1,8 +1,10 @@
 # Search Profiler 
 
-Toolkit for researching search terms specific to the behaviour of a given user profile. It uses heuristics derived from research on user behaviour to construct an LLM prompt, and outputs the result in JSON format. 
+Toolkit for researching search terms specific to the behaviour of a given user profile. 
 
-It uses Replicate to make it easy to experiment with different models. You can then validate these search terms against Google Trends data via SerpAPI. 
+It uses an LLM workflow to explore as many potential branches of search intent as possible. AI excels at divergent exploration, but is quite flawed on how it converges on the best outcome. Human discretion is equaly flawed, although less so, and empirical data remains the gold standard for this sort of thing. 
+
+This puts the human user and the LLM in their proper roles to create the best possible list of preliminary search terms.
 
 > [!WARNING]  
 > Pricing on Replicate is token-based and varies by model. SerpAPI is also usage based, and this script can very easily burn through API credits. I would recommend using small sets of search terms until you're familiar with using this script. 
@@ -35,11 +37,7 @@ Install dependencies (Python 3.10):
 pip install -r requirements.txt
 ```
 
-Add your **`REPLICATE_API_TOKEN`** and **`SERPAPI_API_KEY`**, fill out the user profile in **`src/config.py`** and then run the script:
-
-```bash
-python main.py 
-```
+Add your **`REPLICATE_API_TOKEN`** and **`SERPAPI_API_KEY`**, fill out the user profile in **`src/config.py`**
 
 ## Multiple runs 
 
@@ -69,6 +67,7 @@ This needs to be done to the JSON file in particular, since this is the format u
 ## Manual addition
 
 You can also add your own queries to the JSON file
+
 cd into **`src/utils`** and run:
 
 ```bash
@@ -90,9 +89,7 @@ python main.py --explore output/searchtermsN.json
 
 ## Validation
 
-Run the **`--validate`** flag to get a new JSON file containing search interest data for each term. It will omit any terms with 0 data and write the result to `/output/validatedtermsN.json`
-
-This flag will call SerpAPI instead of Replicate. You will need to include the JSON file as an argument.
+Run the **`--validate`** flag to call SerpAPI, creating a new JSON file containing search interest data for each term. It will omit any terms with 0 data and write the result to `/output/validatedtermsN.json`
 
 ```bash
 python main.py --validate output/searchtermsN.json
