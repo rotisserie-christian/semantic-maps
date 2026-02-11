@@ -11,6 +11,7 @@ from src.llm.save_output import (
 from src.validate import run_validation
 from src.timeseries import run_timeseries
 from src.slope import run_slope_analysis
+from src.merge.merge import run_merge
 
 
 
@@ -64,6 +65,12 @@ def main() -> None:
         default=None,
         metavar="VALIDATED_JSON",
         help="Fetch related queries for queries in a validated JSON file (e.g., output/validatedterms1.json)"
+    )
+    parser.add_argument(
+        "--merge",
+        nargs=2,
+        metavar=("TIMESERIES_JSON", "SLOPE_JSON"),
+        help="Merge slope results from a timeseries JSON file into a slope JSON file"
     )
 
 
@@ -182,6 +189,30 @@ def main() -> None:
             import traceback
             traceback.print_exc()
         
+        return
+
+
+    # If merge mode, run merge and exit
+    if args.merge:
+        timeseries_path_str, slope_path_str = args.merge
+        
+        print("="*60)
+        print(f"MERGE: Merging {timeseries_path_str} into {slope_path_str}")
+        print("="*60 + "\n")
+        
+        try:
+            merged_path = run_merge(timeseries_path_str, slope_path_str)
+            
+            if merged_path:
+                print(f"\n{'='*60}")
+                print("Merge complete!")
+                print("="*60)
+                print(f"Results saved to: {merged_path}")
+        except Exception as e:
+            print(f"\nMerge failed: {e}")
+            import traceback
+            traceback.print_exc()
+            
         return
 
 
