@@ -11,7 +11,7 @@ from src.llm.save_output import (
 from src.validate import run_validation
 from src.timeseries import run_timeseries
 from src.slope import run_slope_analysis
-from src.merge.merge import run_merge
+from src.merge.merge import run_merge, run_prune
 
 
 
@@ -71,6 +71,12 @@ def main() -> None:
         nargs=2,
         metavar=("TIMESERIES_JSON", "SLOPE_JSON"),
         help="Merge slope results from a timeseries JSON file into a slope JSON file"
+    )
+    parser.add_argument(
+        "--prune",
+        nargs=2,
+        metavar=("SEARCHTERMS_JSON", "SLOPE_JSON"),
+        help="Remove queries found in a slope JSON file from a search terms JSON file"
     )
 
 
@@ -210,6 +216,29 @@ def main() -> None:
                 print(f"Results saved to: {merged_path}")
         except Exception as e:
             print(f"\nMerge failed: {e}")
+            import traceback
+            traceback.print_exc()
+            
+        return
+
+    # If prune mode, run prune and exit
+    if args.prune:
+        search_path_str, slope_path_str = args.prune
+        
+        print("="*60)
+        print(f"PRUNE: Removing terms in {slope_path_str} from {search_path_str}")
+        print("="*60 + "\n")
+        
+        try:
+            pruned_path = run_prune(search_path_str, slope_path_str)
+            
+            if pruned_path:
+                print(f"\n{'='*60}")
+                print("Pruning complete!")
+                print("="*60)
+                print(f"Results saved to: {pruned_path}")
+        except Exception as e:
+            print(f"\nPruning failed: {e}")
             import traceback
             traceback.print_exc()
             
