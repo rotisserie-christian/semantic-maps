@@ -10,6 +10,17 @@ It uses Replicate to make it easy to experiment with different models. You can t
 > [!TIP]
 > Adjust max_tokens in src/config.py to limit the number of generated terms. Usually ~100 tokens = 1 search term.
 
+## Contents
+- [Set up](##set-up)
+- [Multiple runs](##multiple-runs)
+- [Manual pruning](##manual-pruning)
+- [Manual addition](##manual-addition)
+- [Explore related terms](##explore-related-terms)
+- [Validation](##validation)
+- [Time Series](##time-series)
+- [Slope](##slope)
+- [Dependencies](##dependencies)
+
 ## Set up
 
 Clone the repo:
