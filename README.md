@@ -37,11 +37,7 @@ Install dependencies (Python 3.10):
 pip install -r requirements.txt
 ```
 
-Add your **`REPLICATE_API_TOKEN`** and **`SERPAPI_API_KEY`**, fill out the user profile in **`src/config.py`** and then run the script:
-
-```bash
-python main.py 
-```
+Add your **`REPLICATE_API_TOKEN`** and **`SERPAPI_API_KEY`**, fill out the user profile in **`src/config.py`**
 
 ## Multiple runs 
 
