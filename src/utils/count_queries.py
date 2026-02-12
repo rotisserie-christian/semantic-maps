@@ -63,7 +63,7 @@ def count_queries(file_path: str) -> int:
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python lsq.py <json_file>")
+        print("Usage: python count_queries.py <json_file>")
         sys.exit(1)
         
     file_path = sys.argv[1]
