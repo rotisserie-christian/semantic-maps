@@ -11,7 +11,7 @@ from src.llm.save_output import (
 from src.validate import run_validation
 from src.timeseries import run_timeseries
 from src.slope import run_slope_analysis
-from src.merge.merge import run_merge, run_prune
+from src.merge.merge import run_merge, run_merge_slope, run_prune
 
 
 
@@ -68,6 +68,12 @@ def main() -> None:
     )
     parser.add_argument(
         "--merge",
+        nargs=2,
+        metavar=("SEARCHTERMS_JSON", "VALIDATED_JSON"),
+        help="Merge new queries from searchterms into validated file and optionally validate them"
+    )
+    parser.add_argument(
+        "--merge-slope",
         nargs=2,
         metavar=("TIMESERIES_JSON", "SLOPE_JSON"),
         help="Merge slope results from a timeseries JSON file into a slope JSON file"
@@ -200,14 +206,14 @@ def main() -> None:
 
     # If merge mode, run merge and exit
     if args.merge:
-        timeseries_path_str, slope_path_str = args.merge
+        search_path_str, validated_path_str = args.merge
         
         print("="*60)
-        print(f"MERGE: Merging {timeseries_path_str} into {slope_path_str}")
+        print(f"MERGE: Merging new queries from {search_path_str} into {validated_path_str}")
         print("="*60 + "\n")
         
         try:
-            merged_path = run_merge(timeseries_path_str, slope_path_str)
+            merged_path = run_merge(search_path_str, validated_path_str)
             
             if merged_path:
                 print(f"\n{'='*60}")
@@ -216,6 +222,29 @@ def main() -> None:
                 print(f"Results saved to: {merged_path}")
         except Exception as e:
             print(f"\nMerge failed: {e}")
+            import traceback
+            traceback.print_exc()
+            
+        return
+
+    # If merge-slope mode, run merge-slope and exit
+    if args.merge_slope:
+        timeseries_path_str, slope_path_str = args.merge_slope
+        
+        print("="*60)
+        print(f"MERGE-SLOPE: Merging {timeseries_path_str} into {slope_path_str}")
+        print("="*60 + "\n")
+        
+        try:
+            merged_path = run_merge_slope(timeseries_path_str, slope_path_str)
+            
+            if merged_path:
+                print(f"\n{'='*60}")
+                print("Merge slope complete!")
+                print("="*60)
+                print(f"Results saved to: {merged_path}")
+        except Exception as e:
+            print(f"\nMerge slope failed: {e}")
             import traceback
             traceback.print_exc()
             

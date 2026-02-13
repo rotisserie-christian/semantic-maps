@@ -69,35 +69,28 @@ def batch_fetch_interest(
     return interest_data
 
 
-def run_validation(
-    input_json_path: str | Path
-) -> Path:
+def validate_queries(
+    original_queries: List[Tuple[str, str]],
+    client: TrendsAPIClient = None
+) -> List[Dict]:
     """
-    Run simplified validation: fetch interest for all queries and return them.
+    Validates a list of (cluster, query) tuples.
     
     Args:
-        input_json_path: Path to generated searchtermsN.json
+        original_queries: List of (cluster, query) tuples
+        client: Optional TrendsAPIClient instance
         
     Returns:
-        Path to saved validatedtermsN.json file
+        List of validated query dicts
     """
-    input_path = Path(input_json_path)
-    
-    # Initialize API
-    print("Initializing SerpAPI client...")
-    try:
-        client = TrendsAPIClient()
-    except RuntimeError as e:
-        print(f"\nError: {e}")
-        raise
-    
-    # Load generated queries
-    print(f"\nLoading generated queries from {input_path}...")
-    original_queries = load_generated_queries(input_path)
-    if not original_queries:
-        print("\nError: No queries found in input file.")
-        return None
-    
+    if not client:
+        print("Initializing SerpAPI client...")
+        try:
+            client = TrendsAPIClient()
+        except RuntimeError as e:
+            print(f"\nError: {e}")
+            raise
+
     # Fetch interest for all queries
     print(f"\nFetching interest data for {len(original_queries)} queries...")
     query_list = [q for c, q in original_queries]
@@ -125,8 +118,38 @@ def run_validation(
     # Sort by avg_interest descending
     results.sort(key=lambda x: x["metrics"]["avg_interest"], reverse=True)
     
+    if omitted_count > 0:
+        print(f"Omitted {omitted_count} queries with 0 data.")
+        
+    return results
+
+
+def run_validation(
+    input_json_path: str | Path
+) -> Path:
+    """
+    Run simplified validation: fetch interest for all queries and return them.
+    
+    Args:
+        input_json_path: Path to generated searchtermsN.json
+        
+    Returns:
+        Path to saved validatedtermsN.json file
+    """
+    input_path = Path(input_json_path)
+    
+    # Load generated queries
+    print(f"\nLoading generated queries from {input_path}...")
+    original_queries = load_generated_queries(input_path)
+    if not original_queries:
+        print("\nError: No queries found in input file.")
+        return None
+    
+    # Validate
+    results = validate_queries(original_queries)
+    
     # Save to JSON
     output_path = save_validated_json(results)
     
-    print(f"\nValidation complete! Saved results for {len(results)} queries (omitted {omitted_count} with 0 data) to {output_path}")
+    print(f"\nValidation complete! Saved results for {len(results)} queries to {output_path}")
     return output_path
