@@ -87,6 +87,14 @@ def main() -> None:
 
 
     
+    parser.add_argument(
+        "--anchor",
+        type=str,
+        default="free music maker",
+        help="Anchor term for validation comparison (default: 'free music maker')"
+    )
+
+    
     args = parser.parse_args()
     
     # If validation mode, run validation and exit
@@ -101,10 +109,12 @@ def main() -> None:
         
         print("="*60)
         print(f"VALIDATION: Validating {input_path}")
+        if args.anchor:
+            print(f"Anchor term: {args.anchor}")
         print("="*60 + "\n")
         
         try:
-            validated_path = run_validation(input_path)
+            validated_path = run_validation(input_path, anchor=args.anchor)
             
             if validated_path:
                 print(f"\n{'='*60}")

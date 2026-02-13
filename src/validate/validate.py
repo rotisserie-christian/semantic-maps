@@ -37,28 +37,42 @@ def load_generated_queries(json_path: Path) -> List[Tuple[str, str]]:
 
 def batch_fetch_interest(
     queries: List[str],
-    client: TrendsAPIClient
+    client: TrendsAPIClient,
+    anchor: str = None
 ) -> Dict[str, Dict]:
     """
     Args:
         queries: List of query strings
         client: Initialized TrendsAPIClient
+        anchor: Optional anchor term to include in every batch for consistent comparison
         
     Returns:
         Dict mapping query -> interest metrics
     """
-    batch_size = serpapi_config["batch_size"]
+    max_batch_size = serpapi_config["batch_size"]
+    
+    # If anchor is provided, we need to reserve one slot for it
+    if anchor:
+        effective_batch_size = max_batch_size - 1
+    else:
+        effective_batch_size = max_batch_size
+        
     interest_data = {}
     
-    total_batches = (len(queries) + batch_size - 1) // batch_size
+    total_batches = (len(queries) + effective_batch_size - 1) // effective_batch_size
     
-    for i in range(0, len(queries), batch_size):
-        batch = queries[i:i + batch_size]
-        batch_num = (i // batch_size) + 1
+    for i in range(0, len(queries), effective_batch_size):
+        batch = queries[i:i + effective_batch_size]
+        batch_num = (i // effective_batch_size) + 1
         
-        print(f"  Batch {batch_num}/{total_batches}: {len(batch)} queries...")
+        print(f"  Batch {batch_num}/{total_batches}: {len(batch)} queries{' + anchor' if anchor else ''}...")
         
-        response = client.fetch_interest_over_time(batch)
+        # Prepare request batch
+        request_batch = list(batch)
+        if anchor:
+            request_batch.append(anchor)
+        
+        response = client.fetch_interest_over_time(request_batch)
         
         # Extract metrics for each query in batch
         for idx, query in enumerate(batch):
@@ -71,7 +85,8 @@ def batch_fetch_interest(
 
 def validate_queries(
     original_queries: List[Tuple[str, str]],
-    client: TrendsAPIClient = None
+    client: TrendsAPIClient = None,
+    anchor: str = None
 ) -> List[Dict]:
     """
     Validates a list of (cluster, query) tuples.
@@ -79,6 +94,7 @@ def validate_queries(
     Args:
         original_queries: List of (cluster, query) tuples
         client: Optional TrendsAPIClient instance
+        anchor: Optional anchor term for comparison
         
     Returns:
         List of validated query dicts
@@ -94,7 +110,7 @@ def validate_queries(
     # Fetch interest for all queries
     print(f"\nFetching interest data for {len(original_queries)} queries...")
     query_list = [q for c, q in original_queries]
-    interest_data = batch_fetch_interest(query_list, client)
+    interest_data = batch_fetch_interest(query_list, client, anchor=anchor)
     
     # Omit queries with 0 data
     from datetime import datetime
@@ -125,13 +141,15 @@ def validate_queries(
 
 
 def run_validation(
-    input_json_path: str | Path
+    input_json_path: str | Path,
+    anchor: str = None
 ) -> Path:
     """
     Run simplified validation: fetch interest for all queries and return them.
     
     Args:
         input_json_path: Path to generated searchtermsN.json
+        anchor: Optional anchor term for comparison
         
     Returns:
         Path to saved validatedtermsN.json file
@@ -146,7 +164,7 @@ def run_validation(
         return None
     
     # Validate
-    results = validate_queries(original_queries)
+    results = validate_queries(original_queries, anchor=anchor)
     
     # Save to JSON
     output_path = save_validated_json(results)
