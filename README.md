@@ -2,7 +2,7 @@
 
 Toolkit for researching search terms specific to the behaviour of a given user profile. 
 
-It uses an LLM workflow to explore as many potential branches of search intent as possible, then validates them against Google Trends data. 
+The point is to explore as many potential branches of search intent as possible, either through the LLM workflow, or by your own anlaysis, or some combination of the two, and then validate against Google Trends data. 
 
 > [!WARNING]  
 > Pricing on Replicate is token-based and varies by model. SerpAPI is also usage based, and this script can very easily burn through API credits. I would recommend using small sets of search terms until you're familiar with using this script. 
@@ -76,14 +76,14 @@ This will check if it exists, if it doesn't, it will use `sentence-transformers`
 
 ## Explore related terms 
 
+> [!WARNING]  
+> This step can use a lot of serpAPI credits. It also tends to return queries that are less relevant to the specific search intent of the given user profile. However, it can sometimes return highly valuable queries. Just be aware that this is an optional step with a slot machine mechanic baked into it. 
+
 This will call serpAPI to retrieve related queries for each search term if they exist, and add them to the appropriate cluster. It takes in a searchtermsN.json file as an argument and writes the new terms to the same file.
 
 ```bash
 python main.py --explore output/searchtermsN.json
 ```
-
-> [!WARNING]  
-> This step can use a lot of serpAPI credits. It also tends to return queries that are less relevant to the specific search intent of the given user profile. However, it can sometimes return highly valuable queries. Just be aware that this is an optional step with a slot machine mechanic baked into it. 
 
 ## Validation
 
