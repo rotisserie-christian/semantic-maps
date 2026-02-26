@@ -76,14 +76,14 @@ This will check if it exists, if it doesn't, it will use `sentence-transformers`
 
 ## Explore related terms 
 
+> [!WARNING]  
+> This step can use a lot of serpAPI credits. It also tends to return queries that are less relevant to the specific search intent of the given user profile. However, it can sometimes return highly valuable queries. Just be aware that this is an optional step with a slot machine mechanic baked into it. 
+
 This will call serpAPI to retrieve related queries for each search term if they exist, and add them to the appropriate cluster. It takes in a searchtermsN.json file as an argument and writes the new terms to the same file.
 
 ```bash
 python main.py --explore output/searchtermsN.json
 ```
-
-> [!WARNING]  
-> This step can use a lot of serpAPI credits. It also tends to return queries that are less relevant to the specific search intent of the given user profile. However, it can sometimes return highly valuable queries. Just be aware that this is an optional step with a slot machine mechanic baked into it. 
 
 ## Validation
 
