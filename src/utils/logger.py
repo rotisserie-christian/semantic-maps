@@ -32,7 +32,7 @@ def get_logger(name: str, level: int = logging.INFO) -> logging.Logger:
         
         # outputs to output/app.log
         file_handler = logging.FileHandler(LOG_FILE, mode='a', encoding='utf-8')
-        file_handler.setLevel(logging.DEBUG) # Always log DEBUG and above to file
+        file_handler.setLevel(logging.DEBUG) 
         file_formatter = logging.Formatter(LOG_FORMAT, datefmt=DATE_FORMAT)
         file_handler.setFormatter(file_formatter)
         
