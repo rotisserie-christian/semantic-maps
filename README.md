@@ -2,7 +2,9 @@
 
 Toolkit for researching search terms specific to the behaviour of a given user profile. 
 
-The point is to explore as many potential branches of search intent as possible, either through the LLM workflow, or by your own anlaysis, or some combination of the two, and then validate against Google Trends data. 
+The point is to explore as many potential branches of search intent as possible, either through the LLM workflow, or by your own anlaysis, or some combination of the two, and then validate against Google Trends data.
+
+It's meant to help fill in the gaps you may have missed, and compliment your existing strategy. It's not supposed to be an agentic system or something that just gives you all the answers. I made it for myself, so if you want to use it you'll have to go through how I built it and figure out how I use it ¯\_(ツ)_/¯ 
 
 > [!WARNING]  
 > Pricing on Replicate is token-based and varies by model. SerpAPI is also usage based, and this script can very easily burn through API credits. I would recommend using small sets of search terms until you're familiar with using this script. 
