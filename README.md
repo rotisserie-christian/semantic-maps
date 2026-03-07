@@ -9,9 +9,6 @@ It's meant to help fill in the gaps you may have missed, and compliment your exi
 > [!WARNING]  
 > Pricing on Replicate is token-based and varies by model. SerpAPI is also usage based, and this script can very easily burn through API credits. I would recommend using small sets of search terms until you're familiar with using this script. 
 
-> [!TIP]
-> Adjust max_tokens in src/config.py to limit the number of generated terms. Usually ~100 tokens = 1 search term.
-
 ## Contents
 - [Set up](##set-up)
 - [Multiple runs](##multiple-runs)
@@ -42,6 +39,9 @@ Add your **`REPLICATE_API_TOKEN`** and **`SERPAPI_API_KEY`**, fill out the user 
 ## Multiple runs 
 
 This will query the LLM x times, collect all unique search terms, and consolidate the output
+
+> [!TIP]
+> Adjust max_tokens in src/config.py to limit the number of generated terms. Usually ~100 tokens = 1 search term.
 
 ```bash
 python main.py --runs x
