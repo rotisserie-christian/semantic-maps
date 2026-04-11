@@ -5,6 +5,7 @@ from .fetch_trends import TrendsAPIClient
 from .analyze_interest import extract_query_interest_from_batch
 from .save_validated import save_validated_json
 from .config import serpapi_config, validation_config
+from ..utils.calculations import get_scaling_multiplier, rebase_metrics
 
 
 def load_generated_queries(json_path: Path) -> List[Tuple[str, str]]:
@@ -58,6 +59,7 @@ def batch_fetch_interest(
         effective_batch_size = max_batch_size
         
     interest_data = {}
+    reference_anchor_val = None
     
     total_batches = (len(queries) + effective_batch_size - 1) // effective_batch_size
     
@@ -74,10 +76,35 @@ def batch_fetch_interest(
         
         response = client.fetch_interest_over_time(request_batch)
         
+        # Determine scaling factor if anchor is used
+        multiplier = 1.0
+        if anchor:
+            # Anchor is always the last element in request_batch
+            anchor_idx = len(request_batch) - 1
+            anchor_metrics = extract_query_interest_from_batch(response, anchor, anchor_idx)
+            
+            if anchor_metrics:
+                # Use max_interest as the reference point for scaling across batches
+                current_anchor_val = anchor_metrics["max_interest"]
+                
+                if reference_anchor_val is None:
+                    # Capture the first batch's anchor max as the global reference
+                    reference_anchor_val = current_anchor_val
+                    print(f"    [Scaling] Reference Anchor Max set to: {reference_anchor_val}")
+                
+                multiplier = get_scaling_multiplier(current_anchor_val, reference_anchor_val)
+                if multiplier != 1.0:
+                    print(f"    [Scaling] Batch multiplier: {multiplier:.4f}")
+            else:
+                print(f"    [Warning] No metrics found for anchor '{anchor}' in this batch.")
+
         # Extract metrics for each query in batch
         for idx, query in enumerate(batch):
             metrics = extract_query_interest_from_batch(response, query, idx)
             if metrics and metrics["avg_interest"] > 0:
+                # Apply normalization if multiplier is active
+                if multiplier != 1.0:
+                    metrics = rebase_metrics(metrics, multiplier)
                 interest_data[query] = metrics
     
     return interest_data

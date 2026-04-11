@@ -36,7 +36,8 @@ def run_slope_analysis(input_json_path: str | Path) -> Path:
             "cluster": item.get("cluster"),
             "slope": slope_val,
             "avg_interest": item.get("metrics", {}).get("avg_interest"),
-            "max_interest": item.get("metrics", {}).get("max_interest")
+            "max_interest": item.get("metrics", {}).get("max_interest"),
+            "is_normalized": item.get("metrics", {}).get("is_normalized", False)
         })
 
     # Sort by slope descending

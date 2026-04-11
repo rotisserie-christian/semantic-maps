@@ -12,8 +12,9 @@ from src.validate import run_validation
 from src.timeseries import run_timeseries
 from src.slope import run_slope_analysis
 from src.merge.merge import run_merge, run_merge_slope, run_prune
+from src.utils.logger import get_logger
 
-
+logger = get_logger(__name__)
 
 
 def main() -> None:
@@ -102,29 +103,26 @@ def main() -> None:
         input_path = Path(args.validate)
         
         if not input_path.exists():
-            print(f"Error: File not found: {input_path}")
-            print("\nMake sure you've generated queries first:")
-            print("  python main.py --runs 3")
+            logger.error(f"File not found: {input_path}")
+            logger.info("Make sure you've generated queries first:\n  python main.py --runs 3")
             return
         
-        print("="*60)
-        print(f"VALIDATION: Validating {input_path}")
+        logger.info("="*60)
+        logger.info(f"VALIDATION: Validating {input_path}")
         if args.anchor:
-            print(f"Anchor term: {args.anchor}")
-        print("="*60 + "\n")
+            logger.info(f"Anchor term: {args.anchor}")
+        logger.info("="*60)
         
         try:
             validated_path = run_validation(input_path, anchor=args.anchor)
             
             if validated_path:
-                print(f"\n{'='*60}")
-                print("Validation complete!")
-                print("="*60)
-                print(f"Results saved to: {validated_path}")
+                logger.info("="*60)
+                logger.info("Validation complete!")
+                logger.info("="*60)
+                logger.info(f"Results saved to: {validated_path}")
         except Exception as e:
-            print(f"\nValidation failed: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.exception("Validation failed")
         
         return
     
@@ -133,25 +131,23 @@ def main() -> None:
         input_path = Path(args.timeseries)
         
         if not input_path.exists():
-            print(f"Error: File not found: {input_path}")
+            logger.error(f"File not found: {input_path}")
             return
             
-        print("="*60)
-        print(f"TIMESERIES: Fetching interest over time for {input_path}")
-        print("="*60 + "\n")
+        logger.info("="*60)
+        logger.info(f"TIMESERIES: Fetching interest over time for {input_path}")
+        logger.info("="*60)
         
         try:
-            ts_path = run_timeseries(input_path)
+            ts_path = run_timeseries(input_path, anchor=args.anchor)
             
             if ts_path:
-                print(f"\n{'='*60}")
-                print("Timeseries analysis complete!")
-                print("="*60)
-                print(f"Results saved to: {ts_path}")
+                logger.info("="*60)
+                logger.info("Timeseries analysis complete!")
+                logger.info("="*60)
+                logger.info(f"Results saved to: {ts_path}")
         except Exception as e:
-            print(f"\nTimeseries analysis failed: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.exception("Timeseries analysis failed")
         
         return
     
@@ -160,25 +156,23 @@ def main() -> None:
         input_path = Path(args.slope)
         
         if not input_path.exists():
-            print(f"Error: File not found: {input_path}")
+            logger.error(f"File not found: {input_path}")
             return
             
-        print("="*60)
-        print(f"SLOPE: Calculating rate of change for {input_path}")
-        print("="*60 + "\n")
+        logger.info("="*60)
+        logger.info(f"SLOPE: Calculating rate of change for {input_path}")
+        logger.info("="*60)
         
         try:
             slope_path = run_slope_analysis(input_path)
             
             if slope_path:
-                print(f"\n{'='*60}")
-                print("Slope analysis complete!")
-                print("="*60)
-                print(f"Results saved to: {slope_path}")
+                logger.info("="*60)
+                logger.info("Slope analysis complete!")
+                logger.info("="*60)
+                logger.info(f"Results saved to: {slope_path}")
         except Exception as e:
-            print(f"\nSlope analysis failed: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.exception("Slope analysis failed")
         
         return
 
@@ -187,29 +181,25 @@ def main() -> None:
         input_path = Path(args.explore)
         
         if not input_path.exists():
-            print(f"Error: File not found: {input_path}")
+            logger.error(f"File not found: {input_path}")
             return
             
-        print("="*60)
-        print(f"EXPLORE: Fetching related queries for {input_path}")
-        print("="*60 + "\n")
+        logger.info("="*60)
+        logger.info(f"EXPLORE: Fetching related queries for {input_path}")
+        logger.info("="*60)
         
         try:
             from src.explore import run_explore
             updated_path = run_explore(input_path)
             
             if updated_path:
-                print(f"\n{'='*60}")
-                print("Exploration complete!")
-                print("="*60)
-                print(f"Updated file: {updated_path}")
-                print("\nNext steps:")
-                print(f"  - Review the updated file: {updated_path}")
-                print(f"  - Validate if needed: python main.py --validate {updated_path}")
+                logger.info("="*60)
+                logger.info("Exploration complete!")
+                logger.info("="*60)
+                logger.info(f"Updated file: {updated_path}")
+                logger.info(f"Next steps:\n  - Review the updated file: {updated_path}\n  - Validate if needed: python main.py --validate {updated_path}")
         except Exception as e:
-            print(f"\nExploration failed: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.exception("Exploration failed")
         
         return
 
@@ -218,22 +208,20 @@ def main() -> None:
     if args.merge:
         search_path_str, validated_path_str = args.merge
         
-        print("="*60)
-        print(f"MERGE: Merging new queries from {search_path_str} into {validated_path_str}")
-        print("="*60 + "\n")
+        logger.info("="*60)
+        logger.info(f"MERGE: Merging new queries from {search_path_str} into {validated_path_str}")
+        logger.info("="*60)
         
         try:
             merged_path = run_merge(search_path_str, validated_path_str)
             
             if merged_path:
-                print(f"\n{'='*60}")
-                print("Merge complete!")
-                print("="*60)
-                print(f"Results saved to: {merged_path}")
+                logger.info("="*60)
+                logger.info("Merge complete!")
+                logger.info("="*60)
+                logger.info(f"Results saved to: {merged_path}")
         except Exception as e:
-            print(f"\nMerge failed: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.exception("Merge failed")
             
         return
 
@@ -241,22 +229,20 @@ def main() -> None:
     if args.merge_slope:
         timeseries_path_str, slope_path_str = args.merge_slope
         
-        print("="*60)
-        print(f"MERGE-SLOPE: Merging {timeseries_path_str} into {slope_path_str}")
-        print("="*60 + "\n")
+        logger.info("="*60)
+        logger.info(f"MERGE-SLOPE: Merging {timeseries_path_str} into {slope_path_str}")
+        logger.info("="*60)
         
         try:
             merged_path = run_merge_slope(timeseries_path_str, slope_path_str)
             
             if merged_path:
-                print(f"\n{'='*60}")
-                print("Merge slope complete!")
-                print("="*60)
-                print(f"Results saved to: {merged_path}")
+                logger.info("="*60)
+                logger.info("Merge slope complete!")
+                logger.info("="*60)
+                logger.info(f"Results saved to: {merged_path}")
         except Exception as e:
-            print(f"\nMerge slope failed: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.exception("Merge slope failed")
             
         return
 
@@ -264,22 +250,20 @@ def main() -> None:
     if args.prune:
         search_path_str, slope_path_str = args.prune
         
-        print("="*60)
-        print(f"PRUNE: Removing terms in {slope_path_str} from {search_path_str}")
-        print("="*60 + "\n")
+        logger.info("="*60)
+        logger.info(f"PRUNE: Removing terms in {slope_path_str} from {search_path_str}")
+        logger.info("="*60)
         
         try:
             pruned_path = run_prune(search_path_str, slope_path_str)
             
             if pruned_path:
-                print(f"\n{'='*60}")
-                print("Pruning complete!")
-                print("="*60)
-                print(f"Results saved to: {pruned_path}")
+                logger.info("="*60)
+                logger.info("Pruning complete!")
+                logger.info("="*60)
+                logger.info(f"Results saved to: {pruned_path}")
         except Exception as e:
-            print(f"\nPruning failed: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.exception("Pruning failed")
             
         return
 
@@ -288,7 +272,7 @@ def main() -> None:
     # Generate queries
     if args.runs > 1:
         # Multiple runs
-        print(f"Running LLM {args.runs} times with semantic clustering (threshold={args.threshold})...\n")
+        logger.info(f"Running LLM {args.runs} times with semantic clustering (threshold={args.threshold})...")
         clustered_queries = generate_consolidated_clusters(args.runs, args.threshold)
         
         # Save in all three formats
@@ -298,19 +282,16 @@ def main() -> None:
         
         num_queries = len(clustered_queries)
         
-        print(f"\nGenerated {num_queries} queries.")
-        print(f"Saved to:")
-        print(f"  - {csv_path}")
-        print(f"  - {txt_path}")
-        print(f"  - {json_path}")
+        logger.info(f"Generated {num_queries} queries.")
+        logger.info(f"Saved to:\n  - {csv_path}\n  - {txt_path}\n  - {json_path}")
     else:
         # Single run
         queries = query_llm()
         path = save_queries_to_csv(queries)
         num_queries = len(queries)
         
-        print(f"\nGenerated {num_queries} queries.")
-        print(f"Saved to {path}")
+        logger.info(f"Generated {num_queries} queries.")
+        logger.info(f"Saved to {path}")
 
 
 if __name__ == "__main__":
