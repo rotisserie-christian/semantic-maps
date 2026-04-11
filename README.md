@@ -16,8 +16,10 @@ It's meant to help fill in the gaps you may have missed, and compliment your exi
 - [Manual addition](##manual-addition)
 - [Explore related terms](##explore-related-terms)
 - [Validation](##validation)
+- [Normalization](##normalization-anchor-terms)
 - [Time Series](##time-series)
 - [Slope](##slope)
+- [Update](##update-headless-refresh)
 - [Dependencies](##dependencies)
 
 ## Set up
@@ -92,17 +94,29 @@ python main.py --explore output/searchtermsN.json
 Run the **`--validate`** flag to call SerpAPI, creating a new JSON file containing search interest data for each term. It will omit any terms with 0 data and write the result to `/output/validatedtermsN.json`
 
 ```bash
-python main.py --validate output/searchtermsN.json
+python main.py --validate output/searchtermsN.json --anchor "your anchor term"
 ```
 
 > [!NOTE]  
 > It has to be the JSON file, not the CSV or TXT file.
 
+## Normalization (Anchor Terms)
+
+Google Trends data is relative (0-100) and specific to the terms in a single query. To compare hundreds of terms across different batches, you **must** use an anchor term.
+
+By passing the `--anchor` flag, the script:
+1. Includes your anchor in every API batch.
+2. Calculates a "Batch Multiplier" based on the anchor's performance.
+3. Rebases all other terms in that batch against a global reference scale.
+
+**Without an anchor, high-volume and low-volume terms will look identical on a chart if they are in different batches.**
+
 ## Time Series 
 
 Run the **`--timeseries`** flag to get search interest over time for each term. It takes in a validatedtermsN.json file and writes the result to `/output/timeseries/timeseriesN.json`
+
 ```bash
-python main.py --timeseries output/validatedtermsN.json
+python main.py --timeseries output/validatedtermsN.json --anchor "your anchor term"
 ```
 
 The time period is set in **`src/validate/config.py`** 
@@ -117,7 +131,18 @@ Run the **`--slope`** flag with the `timeseriesN.json` file as an argument to ca
 python main.py --slope output/timeseries/timeseriesN.json
 ```
 
-The output will contain `slope` as a single value for each query, along with `avg_interest`, `max_interest`, and `cluster` 
+The output will contain `slope` as a single value for each query, along with `avg_interest`, `max_interest`, and `cluster`. It also includes the `is_normalized` flag to confirm the data was rebased.
+
+## Update (Headless Refresh)
+
+Use the **`--update`** flag to run a full refresh (Validation -> Timeseries -> Slope) for an existing set of queries in one command.
+
+```bash
+# Refresh any JSON file (discovery, validated, or slope)
+python main.py --update output/slope/timeseriesslope1.json --anchor "your anchor term"
+```
+
+The fresh snapshot will be saved to `/output/updated/updatedtermsN.json`.
 
 ## Dependencies 
 - **`Replicate`** - LLM API

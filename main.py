@@ -85,6 +85,13 @@ def main() -> None:
         metavar=("SEARCHTERMS_JSON", "SLOPE_JSON"),
         help="Remove queries found in a slope JSON file from a search terms JSON file"
     )
+    parser.add_argument(
+        "--update",
+        type=str,
+        default=None,
+        metavar="ANY_JSON",
+        help="Run full refresh (validation+timeseries+slope) for terms in any JSON file"
+    )
 
 
     
@@ -269,6 +276,34 @@ def main() -> None:
 
 
     
+        return
+
+
+    # If update mode, run full refresh and exit
+    if args.update:
+        input_path = Path(args.update)
+        
+        if not input_path.exists():
+            logger.error(f"File not found: {input_path}")
+            return
+            
+        logger.info("="*60)
+        logger.info(f"UPDATE: Running full data refresh for {input_path}")
+        logger.info(f"Anchor term: {args.anchor}")
+        logger.info("="*60)
+        
+        try:
+            from src.update.update import run_full_update
+            updated_path = run_full_update(input_path, anchor=args.anchor)
+            
+            if updated_path:
+                logger.info(f"Update complete! Fresh data saved to: {updated_path}")
+        except Exception as e:
+            logger.exception("Update failed")
+            
+        return
+
+
     # Generate queries
     if args.runs > 1:
         # Multiple runs
