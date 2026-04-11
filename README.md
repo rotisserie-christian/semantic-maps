@@ -2,13 +2,12 @@
 
 Toolkit for researching search terms specific to the behaviour of a given user profile. 
 
-The point is to explore as many potential branches of search intent as possible, either through the LLM workflow, or by your own anlaysis, or some combination of the two, and then validate against Google Trends data. 
+The point is to explore as many potential branches of search intent as possible, either through the LLM workflow, or by your own anlaysis, or some combination of the two, and then validate against Google Trends data.
+
+It's meant to help fill in the gaps you may have missed, and compliment your existing strategy. It's not supposed to be an agentic system or something that just gives you all the answers. 
 
 > [!WARNING]  
 > Pricing on Replicate is token-based and varies by model. SerpAPI is also usage based, and this script can very easily burn through API credits. I would recommend using small sets of search terms until you're familiar with using this script. 
-
-> [!TIP]
-> Adjust max_tokens in src/config.py to limit the number of generated terms. Usually ~100 tokens = 1 search term.
 
 ## Contents
 - [Set up](##set-up)
@@ -40,6 +39,9 @@ Add your **`REPLICATE_API_TOKEN`** and **`SERPAPI_API_KEY`**, fill out the user 
 ## Multiple runs 
 
 This will query the LLM x times, collect all unique search terms, and consolidate the output
+
+> [!TIP]
+> Adjust max_tokens in src/config.py to limit the number of generated terms. Usually ~100 tokens = 1 search term.
 
 ```bash
 python main.py --runs x
