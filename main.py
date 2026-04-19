@@ -102,6 +102,25 @@ def main() -> None:
         help="Anchor term for validation comparison (default: 'free music maker')"
     )
 
+    # Reviews flags
+    parser.add_argument(
+        "--reviews",
+        action="store_true",
+        help="Run Google Maps reviews extraction and semantic analysis"
+    )
+    parser.add_argument(
+        "--query",
+        type=str,
+        default=None,
+        help="Search query for reviews (e.g. 'Best cafes in Brooklyn')"
+    )
+    parser.add_argument(
+        "--type",
+        type=str,
+        default=None,
+        help="Specific business type to filter for reviews (e.g. 'Coffee shop')"
+    )
+
     
     args = parser.parse_args()
     
@@ -276,6 +295,21 @@ def main() -> None:
 
 
     
+        return
+
+
+    # If reviews mode, run reviews pipeline and exit
+    if args.reviews:
+        if not args.query:
+            logger.error("--reviews requires a --query 'your search term'")
+            return
+            
+        try:
+            from src.reviews.orchestrator import run_reviews
+            run_reviews(args.query, args.type)
+        except Exception as e:
+            logger.exception("Reviews pipeline failed")
+            
         return
 
 
