@@ -12,16 +12,14 @@ class ReviewsAPIClient:
             raise RuntimeError("SERPAPI_API_KEY environment variable is missing.")
         self.base_url = "https://serpapi.com/search"
 
-    def fetch_all_reviews(self, data_id: str, max_pages: int = 5) -> List[Dict]:
+    def fetch_all_reviews(self, data_id: str, max_pages: int = 2, sort_by: str = "relevancy") -> List[Dict]:
         """
-        Fetch reviews for a specific business ID, with pagination.
+        Fetch reviews for a specific business ID, with pagination and custom sorting.
         
         Args:
             data_id: The unique Google Maps data ID
-            max_pages: Hard cap on pages to prevent accidental credit drain
-            
-        Returns:
-            List of review objects.
+            max_pages: Hard cap on pages
+            sort_by: relevancy, ratingLow, ratingHigh, or newest
         """
         all_reviews = []
         next_token = None
@@ -32,7 +30,7 @@ class ReviewsAPIClient:
                 "engine": "google_maps_reviews",
                 "data_id": data_id,
                 "api_key": self.api_key,
-                "num": 20  # Maximize reviews per credit
+                "sort_by": sort_by
             }
             if next_token:
                 params["next_page_token"] = next_token
@@ -58,9 +56,9 @@ class ReviewsAPIClient:
                 
         return all_reviews
 
-def fetch_reviews_for_places(places: List[Dict], max_pages_per_place: int = 5) -> List[Dict]:
+def fetch_reviews_for_places(places: List[Dict], max_pages_per_side: int = 2) -> List[Dict]:
     """
-    Orchestrates review collection for a list of businesses.
+    Orchestrates review collection by fetching both Highest and Lowest rated reviews.
     """
     client = ReviewsAPIClient()
     combined_data = []
@@ -72,12 +70,16 @@ def fetch_reviews_for_places(places: List[Dict], max_pages_per_place: int = 5) -
         if not d_id:
             continue
             
-        print(f"Collecting reviews for '{name}'...")
-        reviews = client.fetch_all_reviews(d_id, max_pages=max_pages_per_place)
+        print(f"Collecting bipolar reviews for '{name}'...")
+        
+        # 1. Fetch lowest
+        low_reviews = client.fetch_all_reviews(d_id, max_pages=max_pages_per_side, sort_by="ratingLow")
+        # 2. Fetch highest
+        high_reviews = client.fetch_all_reviews(d_id, max_pages=max_pages_per_side, sort_by="ratingHigh")
         
         combined_data.append({
             "business_info": place,
-            "reviews": reviews
+            "reviews": low_reviews + high_reviews
         })
         
     return combined_data

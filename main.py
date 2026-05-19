@@ -9,9 +9,7 @@ from src.llm.save_output import (
     save_clustered_queries_to_json
 )
 from src.validate import run_validation
-from src.timeseries import run_timeseries
-from src.slope import run_slope_analysis
-from src.merge.merge import run_merge, run_merge_slope, run_prune
+from src.merge import run_merge
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -46,20 +44,7 @@ def main() -> None:
         metavar="JSON_FILE",
         help="Validate queries from JSON file using Google Trends (e.g., output/searchterms1.json)"
     )
-    parser.add_argument(
-        "--timeseries",
-        type=str,
-        default=None,
-        metavar="VALIDATED_JSON",
-        help="Fetch interest over time for queries in a validated JSON file (e.g., output/validatedterms1.json)"
-    )
-    parser.add_argument(
-        "--slope",
-        type=str,
-        default=None,
-        metavar="TIMESERIES_JSON",
-        help="Calculate rate of change for queries in a timeseries JSON file (e.g., output/timeseries/timeseries1.json)"
-    )
+
     parser.add_argument(
         "--explore",
         type=str,
@@ -72,25 +57,6 @@ def main() -> None:
         nargs=2,
         metavar=("SEARCHTERMS_JSON", "VALIDATED_JSON"),
         help="Merge new queries from searchterms into validated file and optionally validate them"
-    )
-    parser.add_argument(
-        "--merge-slope",
-        nargs=2,
-        metavar=("TIMESERIES_JSON", "SLOPE_JSON"),
-        help="Merge slope results from a timeseries JSON file into a slope JSON file"
-    )
-    parser.add_argument(
-        "--prune",
-        nargs=2,
-        metavar=("SEARCHTERMS_JSON", "SLOPE_JSON"),
-        help="Remove queries found in a slope JSON file from a search terms JSON file"
-    )
-    parser.add_argument(
-        "--update",
-        type=str,
-        default=None,
-        metavar="ANY_JSON",
-        help="Run full refresh (validation+timeseries+slope) for terms in any JSON file"
     )
 
 
@@ -119,6 +85,12 @@ def main() -> None:
         type=str,
         default=None,
         help="Specific business type to filter for reviews (e.g. 'Coffee shop')"
+    )
+    parser.add_argument(
+        "--load-raw",
+        type=str,
+        default=None,
+        help="Path to a raw_reviews JSON file to process instead of fetching new ones"
     )
 
     
@@ -152,57 +124,7 @@ def main() -> None:
         
         return
     
-    # If timeseries mode, run timeseries and exit
-    if args.timeseries:
-        input_path = Path(args.timeseries)
-        
-        if not input_path.exists():
-            logger.error(f"File not found: {input_path}")
-            return
-            
-        logger.info("="*60)
-        logger.info(f"TIMESERIES: Fetching interest over time for {input_path}")
-        logger.info("="*60)
-        
-        try:
-            ts_path = run_timeseries(input_path, anchor=args.anchor)
-            
-            if ts_path:
-                logger.info("="*60)
-                logger.info("Timeseries analysis complete!")
-                logger.info("="*60)
-                logger.info(f"Results saved to: {ts_path}")
-        except Exception as e:
-            logger.exception("Timeseries analysis failed")
-        
-        return
-    
-    # If slope mode, run slope analysis and exit
-    if args.slope:
-        input_path = Path(args.slope)
-        
-        if not input_path.exists():
-            logger.error(f"File not found: {input_path}")
-            return
-            
-        logger.info("="*60)
-        logger.info(f"SLOPE: Calculating rate of change for {input_path}")
-        logger.info("="*60)
-        
-        try:
-            slope_path = run_slope_analysis(input_path)
-            
-            if slope_path:
-                logger.info("="*60)
-                logger.info("Slope analysis complete!")
-                logger.info("="*60)
-                logger.info(f"Results saved to: {slope_path}")
-        except Exception as e:
-            logger.exception("Slope analysis failed")
-        
-        return
-
-        # If explore mode, run exploration and exit
+    # If explore mode, run exploration and exit
     if args.explore:
         input_path = Path(args.explore)
         
@@ -251,53 +173,6 @@ def main() -> None:
             
         return
 
-    # If merge-slope mode, run merge-slope and exit
-    if args.merge_slope:
-        timeseries_path_str, slope_path_str = args.merge_slope
-        
-        logger.info("="*60)
-        logger.info(f"MERGE-SLOPE: Merging {timeseries_path_str} into {slope_path_str}")
-        logger.info("="*60)
-        
-        try:
-            merged_path = run_merge_slope(timeseries_path_str, slope_path_str)
-            
-            if merged_path:
-                logger.info("="*60)
-                logger.info("Merge slope complete!")
-                logger.info("="*60)
-                logger.info(f"Results saved to: {merged_path}")
-        except Exception as e:
-            logger.exception("Merge slope failed")
-            
-        return
-
-    # If prune mode, run prune and exit
-    if args.prune:
-        search_path_str, slope_path_str = args.prune
-        
-        logger.info("="*60)
-        logger.info(f"PRUNE: Removing terms in {slope_path_str} from {search_path_str}")
-        logger.info("="*60)
-        
-        try:
-            pruned_path = run_prune(search_path_str, slope_path_str)
-            
-            if pruned_path:
-                logger.info("="*60)
-                logger.info("Pruning complete!")
-                logger.info("="*60)
-                logger.info(f"Results saved to: {pruned_path}")
-        except Exception as e:
-            logger.exception("Pruning failed")
-            
-        return
-
-
-    
-        return
-
-
     # If reviews mode, run reviews pipeline and exit
     if args.reviews:
         if not args.query:
@@ -305,37 +180,13 @@ def main() -> None:
             return
             
         try:
-            from src.reviews.orchestrator import run_reviews
-            run_reviews(args.query, args.type)
+            from src.reviews import run_reviews
+            run_reviews(args.query, args.type, load_raw_path=args.load_raw)
         except Exception as e:
             logger.exception("Reviews pipeline failed")
             
         return
 
-
-    # If update mode, run full refresh and exit
-    if args.update:
-        input_path = Path(args.update)
-        
-        if not input_path.exists():
-            logger.error(f"File not found: {input_path}")
-            return
-            
-        logger.info("="*60)
-        logger.info(f"UPDATE: Running full data refresh for {input_path}")
-        logger.info(f"Anchor term: {args.anchor}")
-        logger.info("="*60)
-        
-        try:
-            from src.update.update import run_full_update
-            updated_path = run_full_update(input_path, anchor=args.anchor)
-            
-            if updated_path:
-                logger.info(f"Update complete! Fresh data saved to: {updated_path}")
-        except Exception as e:
-            logger.exception("Update failed")
-            
-        return
 
 
     # Generate queries

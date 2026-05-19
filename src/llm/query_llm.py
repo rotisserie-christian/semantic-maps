@@ -39,22 +39,38 @@ def _call_replicate(prompt: str) -> str:
     return "".join(str(chunk) for chunk in output)
 
 
-def query_llm(profile_override: Optional[Dict[str, object]] = None) -> List[str]:
+def query_llm(
+    profile_override: Optional[Dict[str, object]] = None,
+    prompt_override: Optional[str] = None,
+    return_raw: bool = False
+) -> str | List[str]:
     """
     Build a prompt for the given (or default) profile and query the LLM.
 
+    Args:
+        profile_override: Dictionary to override the user profile.
+        prompt_override: Direct string to use as the prompt (bypasses build_prompt).
+        return_raw: If True, returns the full string output instead of a list of lines.
+
     Returns:
-        A list of non-empty lines, each representing one search query.
+        The full model output string or a list of lines.
     """
-    prompt = build_prompt(profile_override)
+    if prompt_override:
+        prompt = prompt_override
+    else:
+        prompt = build_prompt(profile_override)
+        
     raw_text = _call_replicate(prompt)
+
+    if return_raw:
+        return raw_text
 
     queries: List[str] = []
     for line in raw_text.splitlines():
         cleaned = line.strip()
         if not cleaned:
             continue
-        # Strip off numbering if the model ignores instructions
+        # Strip off numbering
         if cleaned[:2].isdigit() and len(cleaned) > 2:
             rest = cleaned[2:].lstrip(".). \t")
             if rest:

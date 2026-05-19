@@ -17,7 +17,7 @@ profile = {
 
 replicate = {
     "env": "REPLICATE_API_TOKEN",
-    "model": "deepseek-ai/deepseek-v3.1", # Model identifier
+    "model": "google/gemini-3.1-pro", # Model identifier
     "max_tokens": 150048,
     "temperature": 1.0,
 }

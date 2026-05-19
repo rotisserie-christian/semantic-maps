@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 from src.config import profile as default_profile
 from src.heuristics.prompts import get_all_prompts
 
@@ -70,3 +70,33 @@ def build_prompt(profile_override: Optional[Dict[str, object]] = None) -> str:
     )
 
     return "\n\n".join(sections)
+
+
+def build_review_prompt(review_texts: List[str]) -> str:
+    """
+    Build the prompt for semantic analysis of Google Maps reviews.
+    """
+    reviews_block = "\n".join([f"- {r}" for r in review_texts])
+    
+    return f"""
+Act as a Senior Business Intelligence Analyst. Your goal is to identify every piece of specific feedback that is repeated across at least two different reviews.
+
+REVIEWS:
+{reviews_block}
+
+TASK:
+1. Scan every review and identify recurring semantic themes or specific feedback points.
+2. Be exhaustive: If a piece of feedback (strength or weakness) appears in 2 or more reviews, it must be included as a cluster.
+3. For each cluster, provide a 2-5 word label.
+4. Categorize as "Strength" or "Weakness".
+5. List the exact review snippets for every review that matches that cluster. Do not just provide a few examples; map every single matching review.
+
+OUTPUT FORMAT (JSON):
+[
+  {{
+    "feedback": "descriptive label",
+    "type": "Strength/Weakness",
+    "matches": ["exact snippet 1", "exact snippet 2", "exact snippet 3", ...]
+  }}
+]
+"""

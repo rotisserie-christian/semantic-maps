@@ -170,8 +170,32 @@ def save_clustered_queries_to_json(
         for cluster, queries in clusters_dict.items()
     ]
     
-    # Write to file
     with output_path.open("w", encoding="utf-8") as f:
         json.dump(clusters_list, f, indent=2, ensure_ascii=False)
+    
+    return output_path
+
+
+def save_reviews_to_json(
+    clusters: List[Dict],
+    output_root: Path | str = "output",
+) -> Path:
+    """
+    Write semantic review clusters to a new JSON file.
+    """
+    output_dir = Path(output_root) / "reviews"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Simple sequential naming
+    n = 1
+    while True:
+        candidate = output_dir / f"reviews{n}.json"
+        if not candidate.exists():
+            output_path = candidate
+            break
+        n += 1
+    
+    with output_path.open("w", encoding="utf-8") as f:
+        json.dump(clusters, f, indent=2, ensure_ascii=False)
     
     return output_path
