@@ -1,8 +1,8 @@
 ### src
 - **`/heuristics`** - Logic for inferring search behaviour 
 - **`/llm`** - Assemble prompt based on heuristics, generate queries to test
-- **`/slope`** - Calculate rate of change for time series data
-- **`/timeseries`** - Return search interest over time for validated queries 
+- **`/merge`** - Merge two lists of keywords
+- **`/reviews`** - Pull business reviews, cluster the feedback, and sort by ratings
 - **`/utils`** - Scripts for making manual edits 
 - **`/validate`** - Return search terms that contain enough data to work with 
 - **`config.py`** - User profile and llm settings 
