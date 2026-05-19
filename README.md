@@ -1,26 +1,30 @@
-# Search Profiler 
+# Semantic Maps
 
-Toolkit for researching search terms specific to the behaviour of a given user profile. 
+This is my market research toolkit, it can be used for a few different things:
 
-The point is to explore as many potential branches of search intent as possible, either through the LLM workflow, or by your own anlaysis, or some combination of the two, and then validate against Google Trends data.
+#### Brainstorm
+Generate a preliminary list of keywords based on the search behaviour of a given user persona
 
-It's meant to help fill in the gaps you may have missed, and compliment your existing strategy. It's not supposed to be an agentic system or something that just gives you all the answers. 
+#### Validation 
+Validates a set of keywords against Google Trends
 
-> [!WARNING]  
-> Pricing on Replicate is token-based and varies by model. SerpAPI is also usage based, and this script can very easily burn through API credits. I would recommend using small sets of search terms until you're familiar with using this script. 
+#### Reviews
+Pulls Google reviews from businesses in a given market, semantically clusters the feedback, and sorts them by ratings
 
 ## Contents
-- [Set up](##set-up)
-- [Multiple runs](##multiple-runs)
-- [Manual pruning](##manual-pruning)
-- [Manual addition](##manual-addition)
-- [Explore related terms](##explore-related-terms)
-- [Validation](##validation)
-- [Normalization](##normalization-anchor-terms)
-- [Time Series](##time-series)
-- [Slope](##slope)
-- [Update](##update-headless-refresh)
-- [Dependencies](##dependencies)
+- [Set up](#set-up)
+- [Keyword Brainstorming](#keyword-brainstorming)
+  - [Multiple Runs](#multiple-runs)
+  - [Manual Pruning](#manual-pruning)
+  - [Manual Addition](#manual-addition)
+  - [Explore Related Terms](#explore-related-terms)
+- [Trends Validation](#trends-validation)
+  - [Validation](#validation)
+  - [Normalization (Anchor Terms)](#normalization-anchor-terms)
+- [Google Maps Reviews](#google-maps-reviews)
+  - [Live Fetch](#live-fetch)
+  - [Cached Replay](#cached-replay)
+- [Dependencies](#dependencies)
 
 ## Set up
 
@@ -38,7 +42,9 @@ pip install -r requirements.txt
 
 Add your **`REPLICATE_API_TOKEN`** and **`SERPAPI_API_KEY`**, fill out the user profile in **`src/config.py`**
 
-## Multiple runs 
+## Keyword Brainstorming
+
+### Multiple runs 
 
 This will query the LLM x times, collect all unique search terms, and consolidate the output
 
@@ -60,13 +66,13 @@ python main.py --runs x --threshold y
 > [!WARNING]  
 > This creates a lot more output tokens. This is why I set the default model to Deepseek. A high number of runs with a more expensive model can create a massive bill very quickly. 
 
-## Manual pruning 
+### Manual pruning 
 
 I would recommend pruning any slop generations from the JSON output before validating. This will conserve API credits. 
 
 This needs to be done to the JSON file in particular, since this is the format used to call SerpAPI. The TXT and CSV outputs are meant for quick readability and export, and are not used in the actual script itself. 
 
-## Manual addition
+### Manual addition
 
 You can also add your own queries to the JSON file
 
@@ -78,7 +84,7 @@ python add_query.py searchtermsN.json
 
 This will check if it exists, if it doesn't, it will use `sentence-transformers` to find the best matching cluster and add the query to it. 
 
-## Explore related terms 
+### Explore related terms 
 
 > [!WARNING]  
 > This step can use a lot of serpAPI credits. It also tends to return queries that are less relevant to the specific search intent of the given user profile. However, it can sometimes return highly valuable queries. Just be aware that this is an optional step with a slot machine mechanic baked into it. 
@@ -89,7 +95,9 @@ This will call serpAPI to retrieve related queries for each search term if they 
 python main.py --explore output/searchtermsN.json
 ```
 
-## Validation
+## Trends Validation
+
+### Validation
 
 Run the **`--validate`** flag to call SerpAPI, creating a new JSON file containing search interest data for each term. It will omit any terms with 0 data and write the result to `/output/validatedtermsN.json`
 
@@ -100,7 +108,7 @@ python main.py --validate output/searchtermsN.json --anchor "your anchor term"
 > [!NOTE]  
 > It has to be the JSON file, not the CSV or TXT file.
 
-## Normalization (Anchor Terms)
+### Normalization (Anchor Terms)
 
 Google Trends data is relative (0-100) and specific to the terms in a single query. To compare hundreds of terms across different batches, you **must** use an anchor term.
 
@@ -111,38 +119,21 @@ By passing the `--anchor` flag, the script:
 
 **Without an anchor, high-volume and low-volume terms will look identical on a chart if they are in different batches.**
 
-## Time Series 
+## Google Maps Reviews
 
-Run the **`--timeseries`** flag to get search interest over time for each term. It takes in a validatedtermsN.json file and writes the result to `/output/timeseries/timeseriesN.json`
+Semantically cluster and analyze business reviews from Google Maps to surface recurring customer feedback themes, strengths, and weaknesses.
 
+### Live Fetch
+Query Google Maps for businesses in a market, retrieve their highest/lowest reviews, and run LLM semantic clustering:
 ```bash
-python main.py --timeseries output/validatedtermsN.json --anchor "your anchor term"
+python main.py --reviews --query "<business> in <location>" --type "<business_type>"
 ```
 
-The time period is set in **`src/validate/config.py`** 
-
-It uses 3-month by default since this is the longest period that still provides daily data. If you want to use a different period you may need to modify the script. 
-
-## Slope
-
-Run the **`--slope`** flag with the `timeseriesN.json` file as an argument to calculate the rate of change for each search term, and write the result to `/output/slope/timeseriesslopeN.json`
-
+### Cached Replay
+Re-run LLM semantic clustering and analytical metric passes locally using previously fetched raw JSON to save API credits:
 ```bash
-python main.py --slope output/timeseries/timeseriesN.json
+python main.py --reviews --query "any-label" --load-raw output/raw_reviews/latest_fetch.json
 ```
-
-The output will contain `slope` as a single value for each query, along with `avg_interest`, `max_interest`, and `cluster`. It also includes the `is_normalized` flag to confirm the data was rebased.
-
-## Update (Headless Refresh)
-
-Use the **`--update`** flag to run a full refresh (Validation -> Timeseries -> Slope) for an existing set of queries in one command.
-
-```bash
-# Refresh any JSON file (discovery, validated, or slope)
-python main.py --update output/slope/timeseriesslope1.json --anchor "your anchor term"
-```
-
-The fresh snapshot will be saved to `/output/updated/updatedtermsN.json`.
 
 ## Dependencies 
 - **`Replicate`** - LLM API
