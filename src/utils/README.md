@@ -3,3 +3,5 @@
 - **`calculations.py`** - Shared math logic for timeseries and slope analysis
 - **`clean_clusters.py`** - Removes formatting artifacts from cluster names
 - **`count_queries.py`** - Counts total queries in JSON output files
+- **`logger.py`** - Configures console and file logging
+- **`queries.csv`** - This is where you add queries for `add_query.py`
