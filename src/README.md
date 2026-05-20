@@ -1,4 +1,5 @@
 ### src
+- **`/explore`** - Fetch any related search terms, merge into the file   
 - **`/heuristics`** - Logic for inferring search behaviour 
 - **`/llm`** - Assemble prompt based on heuristics, generate queries to test
 - **`/merge`** - Merge two lists of keywords
