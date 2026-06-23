@@ -2,12 +2,13 @@ from typing import List, Dict, Tuple
 from src.llm.query_llm import query_llm
 
 
-def generate_consolidated_queries(num_runs: int) -> List[str]:
+def generate_consolidated_queries(num_runs: int, mode: str = "both") -> List[str]:
     """
     Run the LLM multiple times and consolidate all queries, removing duplicates.
     
     Args:
         num_runs: Number of times to query the LLM
+        mode: Generation mode passed to query_llm ("head", "tail", or "both")
         
     Returns:
         A deduplicated list of all queries from all runs
@@ -16,7 +17,7 @@ def generate_consolidated_queries(num_runs: int) -> List[str]:
     
     for i in range(num_runs):
         print(f"Run {i+1}/{num_runs}...")
-        queries = query_llm()
+        queries = query_llm(mode=mode)
         all_queries.extend(queries)
         print(f"  Generated {len(queries)} queries")
     
@@ -33,7 +34,8 @@ def generate_consolidated_queries(num_runs: int) -> List[str]:
 
 def generate_consolidated_clusters(
     num_runs: int, 
-    similarity_threshold: float = 0.75
+    similarity_threshold: float = 0.75,
+    mode: str = "both",
 ) -> List[Tuple[str, str]]:
     """
     Run the LLM multiple times, parse clusters, and consolidate using semantic similarity.
@@ -41,6 +43,7 @@ def generate_consolidated_clusters(
     Args:
         num_runs: Number of times to query the LLM
         similarity_threshold: Cosine similarity threshold for merging clusters (0-1)
+        mode: Generation mode passed to build_prompt ("head", "tail", or "both")
         
     Returns:
         List of (cluster_title, query) tuples
@@ -56,7 +59,7 @@ def generate_consolidated_clusters(
         print(f"Run {i+1}/{num_runs}...")
         
         # Get raw LLM output
-        prompt = build_prompt()
+        prompt = build_prompt(mode=mode)
         raw_text = _call_replicate(prompt)
         
         # Parse into clusters

@@ -34,6 +34,14 @@ def main() -> None:
         default=0.75,
         help="Cluster similarity threshold when using --runs (0-1, default: 0.75)"
     )
+    parser.add_argument(
+        "--mode",
+        type=str,
+        choices=["head", "tail", "both"],
+        default="both",
+        help="Heuristic bias for generation: 'head' (short, high-volume terms "
+             "for Trends), 'tail' (long-tail persona terms), or 'both' (default)"
+    )
 
     # Validation
     parser.add_argument(
@@ -188,9 +196,9 @@ def main() -> None:
 
     # Generate
     if args.runs > 1:
-        logger.info(f"Running LLM {args.runs} times (threshold={args.threshold})...")
+        logger.info(f"Running LLM {args.runs} times (threshold={args.threshold}, mode={args.mode})...")
 
-        clustered_queries = generate_consolidated_clusters(args.runs, args.threshold)
+        clustered_queries = generate_consolidated_clusters(args.runs, args.threshold, mode=args.mode)
 
         csv_path = save_clustered_queries_to_csv(clustered_queries)
         txt_path = save_clustered_queries_to_txt(clustered_queries)
@@ -199,7 +207,7 @@ def main() -> None:
         logger.info(f"Generated {len(clustered_queries)} queries.")
         logger.info(f"Saved to:\n  - {csv_path}\n  - {txt_path}\n  - {json_path}")
     else:
-        queries = query_llm()
+        queries = query_llm(mode=args.mode)
         path = save_queries_to_csv(queries)
 
         logger.info(f"Generated {len(queries)} queries.")

@@ -42,7 +42,8 @@ def _call_replicate(prompt: str) -> str:
 def query_llm(
     profile_override: Optional[Dict[str, object]] = None,
     prompt_override: Optional[str] = None,
-    return_raw: bool = False
+    return_raw: bool = False,
+    mode: str = "both",
 ) -> str | List[str]:
     """
     Build a prompt for the given (or default) profile and query the LLM.
@@ -51,6 +52,7 @@ def query_llm(
         profile_override: Dictionary to override the user profile.
         prompt_override: Direct string to use as the prompt (bypasses build_prompt).
         return_raw: If True, returns the full string output instead of a list of lines.
+        mode: Generation mode passed to build_prompt ("head", "tail", or "both").
 
     Returns:
         The full model output string or a list of lines.
@@ -58,7 +60,7 @@ def query_llm(
     if prompt_override:
         prompt = prompt_override
     else:
-        prompt = build_prompt(profile_override)
+        prompt = build_prompt(profile_override, mode=mode)
         
     raw_text = _call_replicate(prompt)
 
