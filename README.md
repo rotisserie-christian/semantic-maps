@@ -66,6 +66,18 @@ python main.py --runs x --threshold y
 > [!WARNING]  
 > This creates a lot more output tokens. This is why I set the default model to Deepseek. A high number of runs with a more expensive model can create a massive bill very quickly. 
 
+### Head vs long-tail (`--mode`)
+
+Google Trends only has reliable volume for short, head-style queries. As of right now, there is no system here for validating long-tail terms, but you can still generate them if you want to. The `--mode` flag controls which heuristics drive generation:
+
+- **`head`** - short, high-volume terms (uses `word_choice`, `reformulation`); best for Trends validation
+- **`tail`** - long-tail persona terms (uses `query_length`, `complexity`, `specificity`); best for intent mapping / SEO
+- **`both`** - all heuristics (default)
+
+```bash
+python main.py --runs x --mode head
+```
+
 ### Manual pruning 
 
 I would recommend pruning any slop generations from the JSON output before validating. This will conserve API credits. 
