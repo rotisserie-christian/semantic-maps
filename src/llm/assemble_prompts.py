@@ -51,7 +51,7 @@ def build_prompt(profile_override: Optional[Dict[str, object]] = None) -> str:
         given their profile and the behaviour described above.
 
         - Use the described query length, complexity, specificity, reformulation style, 
-        patience, and word choice.
+        and word choice.
         - Focus on queries that match the user's goals and constraints.
         - Cluster the queries by search intent.
         - Each cluster must have a concise title followed by a colon, then the queries on separate lines.

@@ -3,7 +3,6 @@
 - **`complexity.py`** - Age + domain expertise = how elaborate the initial query is <sup>2,3,7</sup>
 - **`reformulation.py`** - Domain expertise + age = sticks to initial terms vs strategic reformulation / new keywords <sup>2,4,5</sup>
 - **`specificity.py`** - Age + prior task knowledge = vague vs specific phrasing <sup>2,6</sup>
-- **`patience.py`** - Age + cognitive flexibility = time per SERP, evaluation vs quick adjustment <sup>3,7</sup>
 - **`word_choice.py`** - Age + expertise = vocabulary style (confident/casual vs formal, jargon vs lay terms) <sup>6</sup>
 
 ### Aggregator
@@ -13,7 +12,7 @@
 Google Trends only has reliable volume for short, head-style queries, long-tail phrasings require a different approach for validation. The SerpAPI flow only validates head terms, the long-tail heuristics are meant to be used in a future /longtail feature.
 
 - **Head-term:** `word_choice`, `reformulation` (ex. novice "make music" vs expert "DAW")
-- **Long-tail:** `query_length`, `complexity`, `specificity`, `patience` 
+- **Long-tail:** `query_length`, `complexity`, `specificity`
 
 ### References
 1. <small>Yom-Tov E. Demographic differences in search engine use with implications for cohort selection. *Information Retrieval Journal* 22, 570–580 (2019). https://link.springer.com/article/10.1007/s10791-018-09349-2</small>  
