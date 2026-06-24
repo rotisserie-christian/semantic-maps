@@ -1,6 +1,7 @@
 ### src
 - **`/explore`** - Fetch any related search terms, merge into the file   
 - **`/heuristics`** - Logic for inferring search behaviour 
+- **`/joyplot`** - Fetch a single multi-term time series
 - **`/llm`** - Assemble prompt based on heuristics, generate queries to test
 - **`/merge`** - Merge two lists of keywords
 - **`/reviews`** - Pull business reviews, cluster the feedback, and sort by ratings

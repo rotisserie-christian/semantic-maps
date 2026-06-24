@@ -67,6 +67,21 @@ def main() -> None:
         help="Fetch related queries for terms in a searchtermsN.json file"
     )
 
+    # Joyplot
+    parser.add_argument(
+        "--joyplot",
+        type=str,
+        default=None,
+        metavar="CSV_FILE",
+        help="Fetch a single multi-term interest-over-time series from a CSV of terms (max 5)"
+    )
+    parser.add_argument(
+        "--date",
+        type=str,
+        default="today 5-y",
+        help="Google Trends date range for --joyplot (default: 'today 5-y')"
+    )
+
     # Merge
     parser.add_argument(
         "--merge",
@@ -154,6 +169,30 @@ def main() -> None:
                 logger.info("=" * 60)
         except Exception:
             logger.exception("Exploration failed")
+
+        return
+
+    # Joyplot
+    if args.joyplot:
+        input_path = Path(args.joyplot)
+
+        if not input_path.exists():
+            logger.error(f"File not found: {input_path}")
+            return
+
+        logger.info("=" * 60)
+        logger.info(f"JOYPLOT: {input_path} (date={args.date})")
+        logger.info("=" * 60)
+
+        try:
+            from src.joyplot import run_joyplot
+            output_path = run_joyplot(input_path, date=args.date)
+            if output_path:
+                logger.info("=" * 60)
+                logger.info(f"Results saved to: {output_path}")
+                logger.info("=" * 60)
+        except Exception:
+            logger.exception("Joyplot failed")
 
         return
 
