@@ -43,3 +43,6 @@ output/
 ## Cursor / editor artifacts
 .cursor/
 .history/
+
+# Personal use
+personas.md

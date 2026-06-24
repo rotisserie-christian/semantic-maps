@@ -8,6 +8,9 @@ Generate a preliminary list of keywords based on the search behaviour of a given
 #### Validation 
 Validates a set of keywords against Google Trends
 
+#### Joyplot
+Pulls 5 years of Google Trends interest data for up to 5 terms
+
 #### Reviews
 Pulls Google reviews from businesses in a given market, semantically clusters the feedback, and sorts them by ratings
 
@@ -21,6 +24,7 @@ Pulls Google reviews from businesses in a given market, semantically clusters th
 - [Trends Validation](#trends-validation)
   - [Validation](#validation)
   - [Normalization (Anchor Terms)](#normalization-anchor-terms)
+- [Joyplot](#joyplot)
 - [Google Maps Reviews](#google-maps-reviews)
   - [Live Fetch](#live-fetch)
   - [Cached Replay](#cached-replay)
@@ -130,6 +134,25 @@ By passing the `--anchor` flag, the script:
 3. Rebases all other terms in that batch against a global reference scale.
 
 **Without an anchor, high-volume and low-volume terms will look identical on a chart if they are in different batches.**
+
+## Joyplot
+
+Fetch 5 years of Google Trends interest data for up to 5 terms and save the time series to `/output/joyplot/joyplotdataN.json`
+
+It takes a CSV of terms (one per line, max 5) and makes a **single** SerpAPI call:
+
+```bash
+python main.py --joyplot output/joyplottermsN.csv
+```
+
+Override the default 5-year window (`today 5-y`):
+
+```bash
+python main.py --joyplot output/joyplottermsN.csv --date "today 12-m"
+```
+
+> [!NOTE]
+> This uses one API credit. Because it only uses 5 terms, no anchor or multiple requests are needed  
 
 ## Google Maps Reviews
 

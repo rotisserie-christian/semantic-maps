@@ -61,13 +61,15 @@ def _build_task_block(mode: str) -> str:
     """Return the task instructions, tuned to the generation mode."""
     if mode == "head":
         guidance = """
-        - Keep queries short (about 1-3 words) and favor the common, canonical
-        way people search for each concept.
+        - Keep queries short (about 2-4 words) and the way a real person would
+        actually type them, not generic one-word category labels.
         - Use the described reformulation style and word choice.
-        - Avoid long-tail phrasing: drop extra qualifiers and "how to ..." or
-        "best ... for ..." framing.
-        - Focus on the head terms that match the user's goals and constraints.
-        - Prefer high-volume, widely-searched phrasings over narrow variants.
+        - Stay head-friendly (avoid long "how to ... for ..." phrasing), but keep
+        the short qualifiers that reveal this user's situation and intent, such
+        as skill level, the problem they're stuck on, or free vs paid.
+        - Capture what this specific user is actually trying to do, not just the
+        most obvious term for the broad category.
+        - Prefer phrasings real users search, balancing volume with intent.
         """
     elif mode == "tail":
         guidance = """
